@@ -1,4 +1,6 @@
 @import "tailwindcss";
+.hero .hero-visual{background:transparent;box-shadow:none}
+body .nav-shell{border-color:transparent;background:transparent;backdrop-filter:none;box-shadow:none}
 .globe .planet-ring{width:79%;height:79%}
 /* Motion system */
 @keyframes nav-enter{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:none}}
