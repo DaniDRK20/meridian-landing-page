@@ -1,5 +1,5 @@
 @import "tailwindcss";
-.globe .planet-ring{width:75%;height:75%}
+.globe .planet-ring{width:79%;height:79%}
 /* Motion system */
 @keyframes nav-enter{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:none}}
 @keyframes hero-enter{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
