@@ -22,8 +22,9 @@ function Header() {
 
 function Globe({ dark = false }: { dark?: boolean }) {
   return <div className={`globe ${dark ? "globe-dark" : ""}`}>
-    {!dark && <span className="orbital" aria-hidden="true"><i /></span>}
-    <img src="/meridian-globe.png" alt="Globo digital que simboliza tecnología centrada en las personas" />
+    {!dark && <span className="orbit-layer orbit-layer-back" aria-hidden="true"><span className="orbit-line" /></span>}
+    <img src={dark ? "/meridian-globe.png" : "/meridian-globe-layered.png"} alt="Globo digital que simboliza tecnología centrada en las personas" />
+    {!dark && <><span className="orbit-layer orbit-layer-front" aria-hidden="true"><span className="orbit-line" /></span><span className="orbit-layer orbit-node" aria-hidden="true"><i /></span></>}
   </div>;
 }
 
