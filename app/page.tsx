@@ -40,7 +40,6 @@ function ContactForm() {
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const sheetUrl = "https://script.google.com/macros/s/AKfycbzKsucmKXdwHNdJTh4H9K9u8CaR-d8BbpyTsZkX6Mu-LX5YBOgAG1YSlif6zBt5wA/exec";
 
   const close = () => {
     setOpen(false);
@@ -56,10 +55,9 @@ function ContactForm() {
     const values = new FormData(form);
 
     try {
-      await fetch(sheetUrl, {
+      const response = await fetch("/api/contact", {
         method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           nombre: values.get("nombre"),
           apellido: values.get("apellido"),
@@ -67,6 +65,10 @@ function ContactForm() {
           correo: values.get("correo"),
         }),
       });
+      const result = await response.json();
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || "No pudimos enviar tus datos");
+      }
       form.reset();
       setSent(true);
     } catch {
