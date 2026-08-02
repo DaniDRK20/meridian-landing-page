@@ -22,7 +22,7 @@ export function LoginForm({ siteKey }: { siteKey: string }) {
     widgetId.current = window.turnstile.render(widgetRef.current, {
       sitekey: siteKey,
       theme: "light",
-      appearance: "interaction-only",
+      appearance: "always",
       callback: (value: string) => setToken(value),
       "expired-callback": () => setToken(""),
       "error-callback": () => setToken(""),
