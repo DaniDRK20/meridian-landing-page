@@ -26,8 +26,8 @@ export async function POST(request: NextRequest) {
   const data = await request.json(); const resource = text(data.resource, 30); const sql = adminDb();
   if (resource === "task") {
     const title = text(data.title, 220); if (!title) return bad("El título es obligatorio.");
-    const count = await sql`select count(*)::int total from workspace_tasks`;
-    const code = `MW-${String(Number(count[0].total) + 1).padStart(2,"0")}`;
+    const sequence = await sql`select coalesce(max(substring(code from '[0-9]+$')::int),0)::int last_code from workspace_tasks`;
+    const code = `RES-${String(Number(sequence[0].last_code) + 1).padStart(2,"0")}`;
     const rows = await sql`insert into workspace_tasks(code,title,description,status,priority,tag,story_points,progress,due_on,assignee_id,sprint_id,created_by) values(${code},${title},${text(data.description)},${text(data.status,40)||"Ideas"},${text(data.priority,20)||"Media"},${text(data.tag,80)||"Producto"},${number(data.story_points,1)},${number(data.progress)},${data.due_on||null},${data.assignee_id||null},${data.sprint_id||null},${user.id}) returning *`;
     return NextResponse.json({ ok:true,item:rows[0] },{status:201});
   }
