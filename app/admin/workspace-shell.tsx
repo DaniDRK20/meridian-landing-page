@@ -8,7 +8,7 @@ import { useWorkspace } from "./workspace-store";
 import { PresenceSummary, useRealtime } from "./realtime-provider";
 
 export function WorkspaceShell({ user, children }: { user: { id: string; name: string; email: string }; children: ReactNode }) {
-  const pathname = usePathname(); const router = useRouter(); const [open, setOpen] = useState(false); const [query, setQuery] = useState(""); const [searchOpen, setSearchOpen] = useState(false); const [toast,setToast]=useState<{title:string;body:string;mentioned:boolean}|null>(null); const searchRef = useRef<HTMLInputElement>(null); const realtime=useRealtime();
+  const pathname = usePathname(); const router = useRouter(); const [open, setOpen] = useState(false); const [query, setQuery] = useState(""); const [searchOpen, setSearchOpen] = useState(false); const [toast,setToast]=useState<{title:string;body:string;mentioned:boolean}|null>(null); const [unread,setUnread]=useState(0); const searchRef = useRef<HTMLInputElement>(null); const realtime=useRealtime();
   const { tasks, members, sprints, events, documents } = useWorkspace();
   const results = (() => {
     const value = query.trim().toLowerCase(); if (value.length < 2) return [];
@@ -22,12 +22,13 @@ export function WorkspaceShell({ user, children }: { user: { id: string; name: s
     ].slice(0, 10);
   })();
   useEffect(() => { const shortcut = (event: KeyboardEvent) => { if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") { event.preventDefault(); searchRef.current?.focus(); setSearchOpen(true); } }; window.addEventListener("keydown", shortcut); return () => window.removeEventListener("keydown", shortcut); }, []);
-  useEffect(()=>{if(!realtime)return;const channel=realtime.channels.get("meridian:workspace"),listener=(message:{name?:string;data?:{authorId?:string;authorName?:string;content?:string;mentionIds?:string[]}})=>{if(message.name!=="chat.message"||message.data?.authorId===user.id)return;const mentioned=message.data?.mentionIds?.includes(user.id)||false,title=mentioned?`${message.data?.authorName} te mencionó`:`Nuevo mensaje de ${message.data?.authorName}`,body=message.data?.content||"Nuevo mensaje en Meridian";setToast({title,body,mentioned});window.setTimeout(()=>setToast(null),6000);if(document.hidden&&Notification.permission==="granted")new Notification(title,{body,icon:"/favicon.svg",tag:"meridian-chat"})};channel.subscribe("chat.message",listener);return()=>{channel.unsubscribe("chat.message",listener)}},[realtime,user.id]);
+  useEffect(()=>{if(pathname==="/admin/chat")return;fetch("/api/admin/chat?summary=1",{cache:"no-store"}).then(response=>response.json()).then(result=>{if(result.ok)setUnread(Number(result.unread)||0)}).catch(()=>undefined)},[pathname]);
+  useEffect(()=>{if(!realtime)return;const channel=realtime.channels.get("meridian:workspace"),listener=(message:{name?:string;data?:{authorId?:string;authorName?:string;content?:string;mentionIds?:string[]}})=>{if(message.name!=="chat.message"||message.data?.authorId===user.id)return;if(pathname!=="/admin/chat")setUnread(value=>value+1);const mentioned=message.data?.mentionIds?.includes(user.id)||false,title=mentioned?`${message.data?.authorName} te mencionó`:`Nuevo mensaje de ${message.data?.authorName}`,body=message.data?.content||"Nuevo mensaje en Meridian";setToast({title,body,mentioned});window.setTimeout(()=>setToast(null),6000);if(document.hidden&&Notification.permission==="granted")new Notification(title,{body,icon:"/favicon.svg",tag:"meridian-chat"})};channel.subscribe("chat.message",listener);return()=>{channel.unsubscribe("chat.message",listener)}},[realtime,user.id,pathname]);
   const logout = async () => { await fetch("/api/admin/logout", { method: "POST" }); router.replace("/admin/login"); router.refresh(); };
   return <div className="workspace-root">
     <aside className={`workspace-sidebar ${open ? "is-open" : ""}`}>
       <Link className="workspace-brand" href="/"><img src="/meridian-globe-transparent.png" alt="" /><span>Meridian <small>Workspace</small></span></Link>
-      <nav aria-label="Navegación del Workspace">{navItems.map(([label, href, icon]) => <Link key={href} className={pathname === href ? "active" : ""} href={href} onClick={() => setOpen(false)}><i aria-hidden="true">{icon}</i>{label}</Link>)}</nav>
+      <nav aria-label="Navegación del Workspace">{navItems.map(([label, href, icon]) => <Link key={href} className={pathname === href ? "active" : ""} href={href} onClick={() => {setOpen(false);if(href==="/admin/chat")setUnread(0)}}><i aria-hidden="true">{icon}</i>{label}{href==="/admin/chat"&&unread>0&&<em className="nav-unread">{unread>99?"99+":unread}</em>}</Link>)}</nav>
       <div className="workspace-profile"><span className="avatar">{user.name.slice(0, 2).toUpperCase()}</span><span><b>{user.name}</b><small>{user.email}</small></span></div>
       <button className="workspace-logout" onClick={logout}>Cerrar sesión</button>
     </aside>
