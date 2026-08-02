@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 const services = [
   { n: "01", title: "Agentes de IA", text: "Agentes que atienden, clasifican, redactan y ejecutan dentro de tus sistemas, con supervisión humana en cada punto crítico.", tags: ["Soporte", "Ventas", "Back office"], dark: true },
   { n: "02", title: "Automatización de procesos", text: "Flujos que conectan personas, datos y herramientas sin intervención manual.", tags: ["Workflows", "RPA"] },
@@ -6,17 +10,28 @@ const services = [
 ];
 
 function Logo() {
-  return <a className="logo" href="#inicio" aria-label="Meridian, inicio"><span className="logo-mark"><i /></span><span>Meridian</span></a>;
+  return <a className="logo" href="#inicio" aria-label="Meridian, inicio"><img className="brand-logo" src="/meridian-globe-transparent.png" alt="" /><span>Meridian</span></a>;
 }
 
 function Header() {
-  return <header className="nav-shell">
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const update = () => setScrolled(window.scrollY > 24);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, []);
+
+  return <header className={`nav-shell ${scrolled ? "nav-scrolled" : ""} ${open ? "nav-open" : ""}`}>
     <Logo />
     <nav aria-label="Navegación principal">
       <a href="#compania">Compañía</a><a href="#servicios">Qué hacemos</a><a href="#tecnologia">Tecnología</a><a href="#proceso">Proceso</a>
     </nav>
     <a className="nav-cta" href="#contacto">Hablemos</a>
-    <button className="menu" aria-label="Abrir menú"><span /><span /></button>
+    <button className={`menu ${open ? "is-open" : ""}`} aria-label={open ? "Cerrar menú" : "Abrir menú"} aria-expanded={open} onClick={() => setOpen(value => !value)}><span /><span /></button>
+    <div className="mobile-nav" aria-hidden={!open}><a href="#compania" onClick={() => setOpen(false)}>Compañía</a><a href="#servicios" onClick={() => setOpen(false)}>Qué hacemos</a><a href="#tecnologia" onClick={() => setOpen(false)}>Tecnología</a><a href="#proceso" onClick={() => setOpen(false)}>Proceso</a><a href="#contacto" onClick={() => setOpen(false)}>Hablemos</a></div>
   </header>;
 }
 
