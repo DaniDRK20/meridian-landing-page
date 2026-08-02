@@ -29,7 +29,7 @@ function Header() {
     <nav aria-label="Navegación principal">
       <a href="#compania">Compañía</a><a href="#servicios">Qué hacemos</a><a href="#tecnologia">Tecnología</a><a href="#proceso">Proceso</a>
     </nav>
-    <a className="nav-cta" href="#contacto">Hablemos</a>
+    <a className="nav-cta nav-cta-swipe" href="#contacto"><span className="nav-cta-label">Hablemos</span><span className="nav-cta-fill" aria-hidden="true" /></a>
     <button className={`menu ${open ? "is-open" : ""}`} aria-label={open ? "Cerrar menú" : "Abrir menú"} aria-expanded={open} onClick={() => setOpen(value => !value)}><span /><span /></button>
     <div className="mobile-nav" aria-hidden={!open}><a href="#compania" onClick={() => setOpen(false)}>Compañía</a><a href="#servicios" onClick={() => setOpen(false)}>Qué hacemos</a><a href="#tecnologia" onClick={() => setOpen(false)}>Tecnología</a><a href="#proceso" onClick={() => setOpen(false)}>Proceso</a><a href="#contacto" onClick={() => setOpen(false)}>Hablemos</a></div>
   </header>;
