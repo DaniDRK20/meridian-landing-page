@@ -14,7 +14,7 @@ export function RealtimeProvider({enabled,user,children}:{enabled:boolean;user:{
   const refresh=async()=>{const present=await channel.presence.get(),byUser=new Map<string,PresenceState>();for(const member of present){const info=member.data as Partial<PresenceState>|null;if(!member.clientId||!info?.name)continue;const current=byUser.get(member.clientId);if(!current||info.state==="active")byUser.set(member.clientId,{id:member.clientId,name:String(info.name),email:String(info.email||""),state:info.state==="away"?"away":"active"})}setMembers([...byUser.values()])};
   const enter=()=>channel.presence.enter({name:user.name,email:user.email,state:document.hidden?"away":"active"}).then(refresh).catch(()=>undefined);
   const visibility=()=>channel.presence.update({name:user.name,email:user.email,state:document.hidden?"away":"active"}).catch(()=>undefined);
-  const listener=()=>void refresh();channel.presence.subscribe(listener);realtime.connection.on("connected",enter);document.addEventListener("visibilitychange",visibility);
+  const listener=()=>void refresh();channel.presence.subscribe(listener);realtime.connection.on("connected",enter);if(realtime.connection.state==="connected")void enter();document.addEventListener("visibilitychange",visibility);
   const timer=setTimeout(()=>setClient(realtime),0);
   return()=>{clearTimeout(timer);document.removeEventListener("visibilitychange",visibility);channel.presence.unsubscribe(listener);void channel.presence.leave();realtime.close()};
  },[enabled,user.id,user.name,user.email]);
