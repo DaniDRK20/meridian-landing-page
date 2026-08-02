@@ -40,7 +40,7 @@ function ContactForm() {
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const sheetUrl = "https://script.google.com/macros/s/AKfycbxUamdJB2H2WJ7PIMtY-uHTC9lHrp_TYsvH_WOeRUA4I_3K-HwHlBvCVyW8EguqhEg/exec";
+  const sheetUrl = "https://script.google.com/macros/s/AKfycbzKsucmKXdwHNdJTh4H9K9u8CaR-d8BbpyTsZkX6Mu-LX5YBOgAG1YSlif6zBt5wA/exec";
 
   const close = () => {
     setOpen(false);
