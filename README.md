@@ -241,7 +241,7 @@ Antes de publicar cambios, ejecuta `npm run build` para comprobar que el proyect
 
 ## Sitio publicado
 
-[Abrir Meridian](https://meridian-talento-humano.dj24-0885.chatgpt.site)
+[Abrir Meridian](https://meridian-ai-rd.vercel.app/)
 
 ## Seguridad
 
