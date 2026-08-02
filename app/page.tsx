@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 
 const services = [
   { n: "01", title: "Agentes de IA", text: "Agentes que atienden, clasifican, redactan y ejecutan dentro de tus sistemas, con supervisión humana en cada punto crítico.", tags: ["Soporte", "Ventas", "Back office"], dark: true },
@@ -38,10 +38,42 @@ function Header() {
 function ContactForm() {
   const [open, setOpen] = useState(false);
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const sheetUrl = "https://script.google.com/macros/s/AKfycbxUamdJB2H2WJ7PIMtY-uHTC9lHrp_TYsvH_WOeRUA4I_3K-HwHlBvCVyW8EguqhEg/exec";
 
   const close = () => {
     setOpen(false);
     setSent(false);
+    setError("");
+  };
+
+  const submitContact = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitting(true);
+    setError("");
+    const form = event.currentTarget;
+    const values = new FormData(form);
+
+    try {
+      await fetch(sheetUrl, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          nombre: values.get("nombre"),
+          apellido: values.get("apellido"),
+          telefono: values.get("telefono"),
+          correo: values.get("correo"),
+        }),
+      });
+      form.reset();
+      setSent(true);
+    } catch {
+      setError("No pudimos enviar tus datos. Revisa tu conexión e inténtalo nuevamente.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return <>
@@ -53,12 +85,13 @@ function ContactForm() {
           <div className="kicker">Contáctanos</div>
           <h3 id="contact-title">Hablemos de tu proyecto.</h3>
           <p>Déjanos tus datos y nos pondremos en contacto contigo.</p>
-          <form onSubmit={event => { event.preventDefault(); setSent(true); }}>
+          <form onSubmit={submitContact}>
             <label><span>Nombre</span><input name="nombre" autoComplete="given-name" required /></label>
             <label><span>Apellido</span><input name="apellido" autoComplete="family-name" required /></label>
             <label><span>Número telefónico</span><input name="telefono" type="tel" autoComplete="tel" required /></label>
             <label><span>Correo electrónico</span><input name="correo" type="email" autoComplete="email" required /></label>
-            <button className="button primary contact-submit" type="submit">Enviar solicitud</button>
+            {error && <p className="contact-error" role="alert">{error}</p>}
+            <button className="button primary contact-submit" type="submit" disabled={submitting}>{submitting ? "Enviando…" : "Enviar solicitud"}</button>
           </form>
         </> : <div className="contact-success"><span>✓</span><h3>Gracias por contactarnos.</h3><p>Recibimos tus datos. Muy pronto conversaremos contigo.</p><button className="button primary" type="button" onClick={close}>Cerrar</button></div>}
       </div>
