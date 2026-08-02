@@ -26,8 +26,7 @@ export async function GET(request: NextRequest) {
         exists(select 1 from workspace_chat_mentions mm where mm.message_id=m.id and mm.user_id=${user.id}) mentioned
       from workspace_chat_messages m
       join admin_users u on u.id=m.author_id
-      left join workspace_chat_reads r on r.channel_id=m.channel_id and r.user_id=${user.id}
-      where m.author_id<>${user.id} and m.created_at>coalesce(r.last_read_at,to_timestamp(0))
+      where m.author_id<>${user.id}
       order by m.created_at desc limit 1
     `;
     return NextResponse.json({
