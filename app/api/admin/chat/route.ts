@@ -20,14 +20,25 @@ export async function GET(request: NextRequest) {
     sql`select c.*,count(m.id) filter(where m.created_at>coalesce(r.last_read_at,to_timestamp(0)) and m.author_id<>${user.id})::int unread_count from workspace_chat_channels c left join workspace_chat_reads r on r.channel_id=c.id and r.user_id=${user.id} left join workspace_chat_messages m on m.channel_id=c.id group by c.id,r.last_read_at order by c.created_at`,
     sql`select id,name,email from admin_users where is_active=true order by name`,
   ]);
-  if (summary)
+  if (summary) {
+    const latest = await sql`
+      select m.id,m.content,m.created_at,m.author_id,u.name author_name,
+        exists(select 1 from workspace_chat_mentions mm where mm.message_id=m.id and mm.user_id=${user.id}) mentioned
+      from workspace_chat_messages m
+      join admin_users u on u.id=m.author_id
+      left join workspace_chat_reads r on r.channel_id=m.channel_id and r.user_id=${user.id}
+      where m.author_id<>${user.id} and m.created_at>coalesce(r.last_read_at,to_timestamp(0))
+      order by m.created_at desc limit 1
+    `;
     return NextResponse.json({
       ok: true,
       unread: channels.reduce(
         (total, item) => total + Number(item.unread_count || 0),
         0,
       ),
+      latest: latest[0] || null,
     });
+  }
   const selected = requested || String(channels[0]?.id || "");
   const messages = selected
     ? await sql`select m.id,m.channel_id,m.content,m.created_at,m.edited_at,m.author_id,u.name author_name,u.email author_email,r.id reply_id,r.content reply_content,ru.name reply_author,coalesce(array_agg(distinct mu.name) filter(where mu.id is not null),'{}') mentioned_names from workspace_chat_messages m join admin_users u on u.id=m.author_id left join workspace_chat_messages r on r.id=m.reply_to_id left join admin_users ru on ru.id=r.author_id left join workspace_chat_mentions mm on mm.message_id=m.id left join admin_users mu on mu.id=mm.user_id where m.channel_id=${selected} group by m.id,u.id,r.id,ru.id order by m.created_at desc limit 100`
