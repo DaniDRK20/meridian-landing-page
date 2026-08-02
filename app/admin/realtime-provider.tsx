@@ -16,14 +16,11 @@ export function RealtimeProvider({enabled,user,children}:{enabled:boolean;user:{
   const heartbeatTimer=window.setInterval(heartbeat,15000),presenceTimer=window.setInterval(loadPresence,5000);
   const visibility=()=>void heartbeat();document.addEventListener("visibilitychange",visibility);
   if(!enabled)return()=>{stopped=true;clearInterval(heartbeatTimer);clearInterval(presenceTimer);document.removeEventListener("visibilitychange",visibility)};
-  const realtime=new Ably.Realtime({authUrl:"/api/admin/chat/token",authMethod:"GET"}),channel=realtime.channels.get("meridian:workspace");
-  const refresh=async()=>{try{const present=await channel.presence.get(),byUser=new Map<string,PresenceState>();for(const member of present){const info=member.data as Partial<PresenceState>|null;if(!member.clientId||!info?.name)continue;const current=byUser.get(member.clientId);if(!current||info.state==="active")byUser.set(member.clientId,{id:member.clientId,name:String(info.name),email:String(info.email||""),state:info.state==="away"?"away":"active"})}if(byUser.size)setMembers([...byUser.values()])}catch{}};
-  const enter=()=>channel.presence.enter({name:user.name,email:user.email,state:document.hidden?"away":"active"}).then(refresh).catch(()=>undefined);
-  const listener=()=>void refresh();channel.presence.subscribe(listener);
-  realtime.connection.on("connected",()=>{setClient(realtime);void enter()});
+  const realtime=new Ably.Realtime({authUrl:"/api/admin/chat/token",authMethod:"GET"});
+  realtime.connection.on("connected",()=>setClient(realtime));
   realtime.connection.on("disconnected",()=>setClient(null));realtime.connection.on("failed",()=>setClient(null));
-  if(realtime.connection.state==="connected")window.setTimeout(()=>{setClient(realtime);void enter()},0);
-  return()=>{stopped=true;clearInterval(heartbeatTimer);clearInterval(presenceTimer);document.removeEventListener("visibilitychange",visibility);channel.presence.unsubscribe(listener);void channel.presence.leave();realtime.close()};
+  if(realtime.connection.state==="connected")window.setTimeout(()=>setClient(realtime),0);
+  return()=>{stopped=true;clearInterval(heartbeatTimer);clearInterval(presenceTimer);document.removeEventListener("visibilitychange",visibility);realtime.close()};
  },[enabled,user.id,user.name,user.email]);
  return <RealtimeContext.Provider value={client}><PresenceContext.Provider value={members}>{children}</PresenceContext.Provider></RealtimeContext.Provider>;
 }
