@@ -11,6 +11,10 @@ export async function POST(request: Request) {
       correo: String(data.correo || "").trim(),
     };
 
+    if (data.consentimiento !== true) {
+      return Response.json({ ok: false, error: "Debes aceptar la Política de Privacidad" }, { status: 400 });
+    }
+
     if (Object.values(payload).some(value => !value)) {
       return Response.json({ ok: false, error: "Faltan campos obligatorios" }, { status: 400 });
     }

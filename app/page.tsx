@@ -86,6 +86,7 @@ function ContactForm() {
           apellido: values.get("apellido"),
           telefono: values.get("telefono"),
           correo: values.get("correo"),
+          consentimiento: values.get("consentimiento") === "on",
         }),
       });
       const result = await response.json();
@@ -113,6 +114,7 @@ function ContactForm() {
           <label><span>Apellido</span><input name="apellido" autoComplete="family-name" required /></label>
           <label><span>Número telefónico</span><input name="telefono" type="tel" autoComplete="tel" required /></label>
           <label><span>Correo electrónico</span><input name="correo" type="email" autoComplete="email" required /></label>
+          <label className="privacy-consent"><input name="consentimiento" type="checkbox" required /><span>Acepto que Meridian utilice mis datos para responder esta solicitud, según la <a href="/privacidad" target="_blank" rel="noreferrer">Política de Privacidad</a>.</span></label>
           {error && <p className="contact-error" role="alert">{error}</p>}
           <button className="button primary contact-submit" type="submit" disabled={submitting}>{submitting ? "Enviando…" : "Enviar solicitud"}</button>
         </form>
@@ -174,6 +176,6 @@ export default function Home() {
       <div className="cta-art"><Globe dark /></div>
       <div className="cta-copy"><div className="kicker light">Empecemos</div><h2>Tu equipo ya es bueno.<br /><span>Démosle mejores<br />herramientas.</span></h2><p>Conversemos 30 minutos sobre un proceso concreto. Salimos con un diagnóstico claro y una ruta posible.</p><div className="actions center"><ContactForm /><a className="button outline" href="#servicios">Explorar soluciones</a></div></div>
     </section>
-    <footer><div className="footer-grid"><div><Logo /><p>Innovación al servicio del talento humano.</p></div><div><small>Compañía</small><a href="#compania">Quiénes somos</a><a href="#compania">Misión</a><a href="#compania">Valores</a></div><div><small>Soluciones</small><a href="#servicios">Agentes IA</a><a href="#servicios">Automatización</a><a href="#servicios">Integraciones</a></div><div><small>Servicios</small><a href="#servicios">Software a medida</a><a href="#contacto">Iniciar proyecto</a><a href="#proceso">Nuestro proceso</a></div><div><small>Contacto</small><a href="mailto:hola@meridian.com">hola@meridian.com</a><a href="#">LinkedIn</a><a href="#">X</a></div></div><div className="legal"><span>© 2026 Meridian. Todos los derechos reservados.</span><span>Privacidad · Términos · Seguridad</span></div><div className="wordmark">MERIDIAN</div></footer>
+    <footer><div className="footer-grid"><div><Logo /><p>Innovación al servicio del talento humano.</p></div><div><small>Compañía</small><a href="#compania">Quiénes somos</a><a href="#compania">Misión</a><a href="#compania">Valores</a></div><div><small>Soluciones</small><a href="#servicios">Agentes IA</a><a href="#servicios">Automatización</a><a href="#servicios">Integraciones</a></div><div><small>Servicios</small><a href="#servicios">Software a medida</a><a href="#contacto">Iniciar proyecto</a><a href="#proceso">Nuestro proceso</a></div><div><small>Contacto</small><a href="mailto:hola@meridian.com">hola@meridian.com</a><a href="#">LinkedIn</a><a href="#">X</a></div></div><div className="legal"><span>© 2026 Meridian. Todos los derechos reservados.</span><span><a href="/privacidad">Privacidad</a> · Términos · Seguridad</span></div><div className="wordmark">MERIDIAN</div></footer>
   </main>;
 }
