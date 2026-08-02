@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import { createPortal } from "react-dom";
 
 const services = [
   { n: "01", title: "Agentes de IA", text: "Agentes que atienden, clasifican, redactan y ejecutan dentro de tus sistemas, con supervisión humana en cada punto crítico.", tags: ["Soporte", "Ventas", "Back office"], dark: true },
@@ -92,26 +93,28 @@ function ContactForm() {
     }
   };
 
+  const modal = open ? createPortal(<div className="contact-modal" role="dialog" aria-modal="true" aria-labelledby="contact-title" onMouseDown={event => { if (event.target === event.currentTarget) close(); }}>
+    <div className="contact-card">
+      <button className="contact-close" type="button" onClick={close} aria-label="Cerrar formulario">×</button>
+      {!sent ? <>
+        <div className="kicker">Contáctanos</div>
+        <h3 id="contact-title">Hablemos de tu proyecto.</h3>
+        <p>Déjanos tus datos y nos pondremos en contacto contigo.</p>
+        <form onSubmit={submitContact}>
+          <label><span>Nombre</span><input name="nombre" autoComplete="given-name" required /></label>
+          <label><span>Apellido</span><input name="apellido" autoComplete="family-name" required /></label>
+          <label><span>Número telefónico</span><input name="telefono" type="tel" autoComplete="tel" required /></label>
+          <label><span>Correo electrónico</span><input name="correo" type="email" autoComplete="email" required /></label>
+          {error && <p className="contact-error" role="alert">{error}</p>}
+          <button className="button primary contact-submit" type="submit" disabled={submitting}>{submitting ? "Enviando…" : "Enviar solicitud"}</button>
+        </form>
+      </> : <div className="contact-success"><span>✓</span><h3>Gracias por contactarnos.</h3><p>Recibimos tus datos. Muy pronto conversaremos contigo.</p><button className="button primary" type="button" onClick={close}>Cerrar</button></div>}
+    </div>
+  </div>, document.body) : null;
+
   return <>
     <button className="button white" type="button" onClick={() => setOpen(true)}>Agendar una conversación</button>
-    {open && <div className="contact-modal" role="dialog" aria-modal="true" aria-labelledby="contact-title" onMouseDown={event => { if (event.target === event.currentTarget) close(); }}>
-      <div className="contact-card">
-        <button className="contact-close" type="button" onClick={close} aria-label="Cerrar formulario">×</button>
-        {!sent ? <>
-          <div className="kicker">Contáctanos</div>
-          <h3 id="contact-title">Hablemos de tu proyecto.</h3>
-          <p>Déjanos tus datos y nos pondremos en contacto contigo.</p>
-          <form onSubmit={submitContact}>
-            <label><span>Nombre</span><input name="nombre" autoComplete="given-name" required /></label>
-            <label><span>Apellido</span><input name="apellido" autoComplete="family-name" required /></label>
-            <label><span>Número telefónico</span><input name="telefono" type="tel" autoComplete="tel" required /></label>
-            <label><span>Correo electrónico</span><input name="correo" type="email" autoComplete="email" required /></label>
-            {error && <p className="contact-error" role="alert">{error}</p>}
-            <button className="button primary contact-submit" type="submit" disabled={submitting}>{submitting ? "Enviando…" : "Enviar solicitud"}</button>
-          </form>
-        </> : <div className="contact-success"><span>✓</span><h3>Gracias por contactarnos.</h3><p>Recibimos tus datos. Muy pronto conversaremos contigo.</p><button className="button primary" type="button" onClick={close}>Cerrar</button></div>}
-      </div>
-    </div>}
+    {modal}
   </>;
 }
 

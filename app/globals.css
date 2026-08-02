@@ -55,16 +55,16 @@ body .nav-shell.nav-scrolled,body .nav-shell.nav-open{border-color:rgba(220,229,
 }
 
 @media(max-width:700px),(max-height:650px){
-  .contact-modal{display:block;overflow:hidden;padding:0;background:var(--paper);backdrop-filter:none}
-  .contact-card{width:100%;max-width:none;height:100dvh;min-height:100svh;margin:0;padding:max(22px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));overflow-x:hidden;overflow-y:auto;border:0;border-radius:0;background-color:var(--paper);background-image:linear-gradient(rgba(7,30,73,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(7,30,73,.035) 1px,transparent 1px);background-size:44px 44px;box-shadow:none;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
-  .contact-close{position:sticky;z-index:2;float:right;right:0;top:0;display:grid;place-items:center;width:42px;height:42px;margin:0 0 8px 12px;padding:0;font-size:25px;line-height:1;box-shadow:0 6px 18px rgba(7,30,73,.08)}
+  .contact-modal{align-items:flex-start;overflow-x:hidden;overflow-y:auto;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));background:rgba(3,15,40,.76);backdrop-filter:blur(10px);overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  .contact-card{width:min(520px,100%);max-width:520px;height:auto;min-height:0;margin:auto;padding:28px 18px 22px;overflow:visible;border:1px solid rgba(255,255,255,.7);border-radius:24px;background:#f8faff;box-shadow:0 24px 70px rgba(0,10,35,.35)}
+  .contact-close{position:absolute;float:none;right:14px;top:14px;display:grid;place-items:center;width:40px;height:40px;margin:0;padding:0;font-size:25px;line-height:1;box-shadow:0 6px 18px rgba(7,30,73,.08)}
   .contact-card h3{clear:both;padding-right:0;font-size:clamp(27px,8vw,34px)}
   .contact-card>p{max-width:520px;font-size:15px;line-height:1.5}
   .contact-card form{width:100%;max-width:560px;gap:14px;margin:22px auto 0}
   .contact-card label{gap:7px;font-size:13px}
   .contact-card input{height:52px;border-radius:15px}
   .contact-submit{width:100%;min-height:52px;margin-top:4px}
-  .contact-success{width:100%;max-width:520px;margin:15vh auto 0}
+  .contact-success{width:100%;max-width:520px;margin:0 auto}
 }
 
 @media(max-width:380px){

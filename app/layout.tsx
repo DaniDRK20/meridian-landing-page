@@ -5,8 +5,8 @@ export const metadata: Metadata = {
   title: "Meridian — Innovación al servicio del talento humano",
   description: "Software, agentes de inteligencia artificial e integraciones que amplifican la capacidad de los equipos.",
   icons: {
-    icon: [{ url: "/meridian-globe.png", type: "image/png" }],
-    shortcut: "/meridian-globe.png",
+    icon: [{ url: "/favicon-rounded.svg", type: "image/svg+xml" }],
+    shortcut: "/favicon-rounded.svg",
     apple: "/meridian-globe.png",
   },
 };
