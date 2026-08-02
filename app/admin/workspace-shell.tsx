@@ -17,7 +17,7 @@ export function WorkspaceShell({ user, children }: { user: { name: string; email
     </aside>
     {open && <button className="sidebar-scrim" aria-label="Cerrar navegación" onClick={() => setOpen(false)} />}
     <div className="workspace-main">
-      <header className="workspace-topbar"><button className="sidebar-toggle" onClick={() => setOpen(value => !value)} aria-label="Abrir navegación">☰</button><label className="global-search"><span aria-hidden="true">⌕</span><input placeholder="Buscar tareas, personas o documentos…" aria-label="Buscar" /></label><span className="sprint-pill">Sprint 04 · Activo</span><button className="notification" aria-label="Notificaciones">●</button><span className="top-avatar">{user.name.slice(0, 2).toUpperCase()}</span></header>
+      <header className="workspace-topbar"><button className="sidebar-toggle" onClick={() => setOpen(value => !value)} aria-label="Abrir navegación">☰</button><label className="global-search"><span aria-hidden="true">⌕</span><input placeholder="Buscar tareas, personas o documentos…" aria-label="Buscar" /></label><span className="sprint-pill">Workspace · Activo</span><span className="top-avatar" title={user.name}>{user.name.slice(0, 2).toUpperCase()}</span><button className="top-logout" onClick={logout} aria-label="Cerrar sesión" title="Cerrar sesión"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H6a2 2 0 00-2 2v10a2 2 0 002 2h4M14 8l4 4-4 4M9 12h9"/></svg><span>Salir</span></button></header>
       <main className="workspace-content">{children}</main>
     </div>
   </div>;
