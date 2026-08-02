@@ -35,6 +35,37 @@ function Header() {
   </header>;
 }
 
+function ContactForm() {
+  const [open, setOpen] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const close = () => {
+    setOpen(false);
+    setSent(false);
+  };
+
+  return <>
+    <button className="button white" type="button" onClick={() => setOpen(true)}>Agendar una conversación</button>
+    {open && <div className="contact-modal" role="dialog" aria-modal="true" aria-labelledby="contact-title" onMouseDown={event => { if (event.target === event.currentTarget) close(); }}>
+      <div className="contact-card">
+        <button className="contact-close" type="button" onClick={close} aria-label="Cerrar formulario">×</button>
+        {!sent ? <>
+          <div className="kicker">Contáctanos</div>
+          <h3 id="contact-title">Hablemos de tu proyecto.</h3>
+          <p>Déjanos tus datos y nos pondremos en contacto contigo.</p>
+          <form onSubmit={event => { event.preventDefault(); setSent(true); }}>
+            <label><span>Nombre</span><input name="nombre" autoComplete="given-name" required /></label>
+            <label><span>Apellido</span><input name="apellido" autoComplete="family-name" required /></label>
+            <label><span>Número telefónico</span><input name="telefono" type="tel" autoComplete="tel" required /></label>
+            <label><span>Correo electrónico</span><input name="correo" type="email" autoComplete="email" required /></label>
+            <button className="button primary contact-submit" type="submit">Enviar solicitud</button>
+          </form>
+        </> : <div className="contact-success"><span>✓</span><h3>Gracias por contactarnos.</h3><p>Recibimos tus datos. Muy pronto conversaremos contigo.</p><button className="button primary" type="button" onClick={close}>Cerrar</button></div>}
+      </div>
+    </div>}
+  </>;
+}
+
 function Globe({ dark = false }: { dark?: boolean }) {
   return <div className={`globe ${dark ? "globe-dark" : ""}`}>
     <img src="/meridian-globe-transparent.png" alt="Globo digital que simboliza tecnología centrada en las personas" />
@@ -81,7 +112,7 @@ export default function Home() {
 
     <section id="contacto" className="cta">
       <div className="cta-art"><Globe dark /></div>
-      <div className="cta-copy"><div className="kicker light">Empecemos</div><h2>Tu equipo ya es bueno.<br /><span>Démosle mejores<br />herramientas.</span></h2><p>Conversemos 30 minutos sobre un proceso concreto. Salimos con un diagnóstico claro y una ruta posible.</p><div className="actions center"><a className="button white" href="mailto:hola@meridian.com">Agendar una conversación</a><a className="button outline" href="#servicios">Explorar soluciones</a></div></div>
+      <div className="cta-copy"><div className="kicker light">Empecemos</div><h2>Tu equipo ya es bueno.<br /><span>Démosle mejores<br />herramientas.</span></h2><p>Conversemos 30 minutos sobre un proceso concreto. Salimos con un diagnóstico claro y una ruta posible.</p><div className="actions center"><ContactForm /><a className="button outline" href="#servicios">Explorar soluciones</a></div></div>
     </section>
     <footer><div className="footer-grid"><div><Logo /><p>Innovación al servicio del talento humano.</p></div><div><small>Compañía</small><a href="#compania">Quiénes somos</a><a href="#compania">Misión</a><a href="#compania">Valores</a></div><div><small>Soluciones</small><a href="#servicios">Agentes IA</a><a href="#servicios">Automatización</a><a href="#servicios">Integraciones</a></div><div><small>Servicios</small><a href="#servicios">Software a medida</a><a href="#contacto">Iniciar proyecto</a><a href="#proceso">Nuestro proceso</a></div><div><small>Contacto</small><a href="mailto:hola@meridian.com">hola@meridian.com</a><a href="#">LinkedIn</a><a href="#">X</a></div></div><div className="legal"><span>© 2026 Meridian. Todos los derechos reservados.</span><span>Privacidad · Términos · Seguridad</span></div><div className="wordmark">MERIDIAN</div></footer>
   </main>;
