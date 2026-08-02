@@ -17,6 +17,7 @@ function Logo() {
 function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [adminAuthenticated, setAdminAuthenticated] = useState(false);
 
   useEffect(() => {
     const update = () => setScrolled(window.scrollY > 24);
@@ -25,14 +26,21 @@ function Header() {
     return () => window.removeEventListener("scroll", update);
   }, []);
 
+  useEffect(() => {
+    fetch("/api/admin/session", { cache: "no-store" })
+      .then(response => response.json())
+      .then(result => setAdminAuthenticated(Boolean(result.authenticated)))
+      .catch(() => setAdminAuthenticated(false));
+  }, []);
+
   return <header className={`nav-shell ${scrolled ? "nav-scrolled" : ""} ${open ? "nav-open" : ""}`}>
     <Logo />
     <nav aria-label="Navegación principal">
       <a href="#compania">Compañía</a><a href="#servicios">Qué hacemos</a><a href="#tecnologia">Tecnología</a><a href="#proceso">Proceso</a>
     </nav>
-    <a className="nav-cta nav-cta-swipe" href="#contacto"><span className="nav-cta-label">Hablemos</span><span className="nav-cta-fill" aria-hidden="true" /></a>
+    <div className="nav-actions"><a className="nav-admin-link" href={adminAuthenticated ? "/admin" : "/admin/login"}>{adminAuthenticated ? "Workspace" : "Acceso administrativo"}</a><a className="nav-cta nav-cta-swipe" href="#contacto"><span className="nav-cta-label">Hablemos</span><span className="nav-cta-fill" aria-hidden="true" /></a></div>
     <button className={`menu ${open ? "is-open" : ""}`} aria-label={open ? "Cerrar menú" : "Abrir menú"} aria-expanded={open} onClick={() => setOpen(value => !value)}><span /><span /></button>
-    <div className="mobile-nav" aria-hidden={!open}><a href="#compania" onClick={() => setOpen(false)}>Compañía</a><a href="#servicios" onClick={() => setOpen(false)}>Qué hacemos</a><a href="#tecnologia" onClick={() => setOpen(false)}>Tecnología</a><a href="#proceso" onClick={() => setOpen(false)}>Proceso</a><a href="#contacto" onClick={() => setOpen(false)}>Hablemos</a></div>
+    <div className="mobile-nav" aria-hidden={!open}><a href="#compania" onClick={() => setOpen(false)}>Compañía</a><a href="#servicios" onClick={() => setOpen(false)}>Qué hacemos</a><a href="#tecnologia" onClick={() => setOpen(false)}>Tecnología</a><a href="#proceso" onClick={() => setOpen(false)}>Proceso</a><a href={adminAuthenticated ? "/admin" : "/admin/login"}>{adminAuthenticated ? "Workspace" : "Acceso administrativo"}</a><a href="#contacto" onClick={() => setOpen(false)}>Hablemos</a></div>
   </header>;
 }
 

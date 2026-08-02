@@ -1,0 +1,11 @@
+import { team, tasks } from "../workspace-data";
+
+export default function DashboardPage() {
+  return <><div className="workspace-heading"><div><span className="admin-eyebrow">Dashboard</span><h1>Buenos días, equipo.</h1><p>Una vista clara del Sprint 04 y de lo que necesita atención.</p></div><button className="admin-primary demo-action">+ Acción rápida</button></div>
+    <section className="stat-grid">{[["12", "Días restantes", "Sprint cierra el 14 Ago"], ["27", "Completadas", "+8 esta semana"], ["11", "Pendientes", "4 de prioridad alta"], ["2", "Bloqueadas", "Requieren decisión"], ["4", "Miembros activos", "Equipo completo"]].map(([value,label,detail]) => <article className="stat-card" key={label}><small>{label}</small><strong>{value}</strong><span>{detail}</span></article>)}</section>
+    <div className="dashboard-grid"><section className="workspace-panel sprint-summary"><header><div><small>Sprint actual</small><h2>Base operativa de Meridian</h2></div><b>68%</b></header><p>Entregar el núcleo administrativo seguro y validar el flujo principal del producto.</p><div className="progress"><i style={{ width: "68%" }} /></div><footer><span>Inicio · 31 Jul</span><span>Cierre · 14 Ago</span></footer></section>
+    <section className="workspace-panel"><header><h2>Próximas entregas</h2><a href="/admin/calendario">Ver calendario</a></header><div className="delivery-list">{tasks.slice(2,6).map(task => <p key={task.id}><span className="priority-dot" /> <b>{task.title}</b><small>{task.due}</small></p>)}</div></section>
+    <section className="workspace-panel"><header><h2>Actividad del equipo</h2></header><div className="activity-list">{team.map(member => <p key={member.name}><span className="avatar">{member.initials}</span><span><b>{member.name}</b><small>Actualizó tareas del Sprint 04</small></span><time>Hoy</time></p>)}</div></section>
+    <section className="workspace-panel mini-calendar"><header><h2>Calendario próximo</h2></header><p><b>03</b><span>Daily Scrum<small>9:30 AM · Equipo</small></span></p><p><b>05</b><span>Revisión de diseño<small>2:00 PM · Sarah</small></span></p><p><b>08</b><span>Sprint Review<small>4:00 PM · Equipo</small></span></p></section></div>
+  </>;
+}

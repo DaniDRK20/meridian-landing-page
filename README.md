@@ -249,3 +249,45 @@ Antes de publicar cambios, ejecuta `npm run build` para comprobar que el proyect
 - El endpoint de Apps Script no es una contraseña, pero debe validarse y protegerse contra abuso si aumenta el tráfico.
 - Para producción con tráfico significativo, añade protección antispam como Cloudflare Turnstile.
 
+## Meridian Workspace (`/admin`)
+
+El panel privado utiliza Neon Postgres para administradores y sesiones, `bcryptjs` para hashes de contraseña, cookies opacas `HttpOnly` y Cloudflare Turnstile validado en el servidor. No existe registro público ni un endpoint para crear usuarios.
+
+### Configurar Neon
+
+1. Crea un proyecto gratuito en Neon y copia su cadena de conexión.
+2. Crea `.env.local` a partir de `.env.example` y coloca la cadena en `DATABASE_URL`.
+3. Abre el SQL Editor de Neon y ejecuta `migrations/0001_admin_workspace.sql`.
+4. En Vercel agrega `DATABASE_URL` en **Project Settings → Environment Variables**.
+
+### Configurar Cloudflare Turnstile
+
+1. En Cloudflare abre **Turnstile → Add widget**.
+2. Añade `localhost` y `meridian-ai-rd.vercel.app`.
+3. Copia la Site Key en `NEXT_PUBLIC_TURNSTILE_SITE_KEY` y la Secret Key en `TURNSTILE_SECRET_KEY`.
+4. Agrega ambas variables en Vercel. La secreta nunca debe llevar el prefijo `NEXT_PUBLIC_`.
+5. Para desarrollo local, `.env.example` incluye las claves oficiales de prueba.
+
+### Crear los cuatro administradores
+
+Configura `DATABASE_URL` y ejecuta una vez por persona. La contraseña se solicita en la terminal o mediante `ADMIN_SEED_PASSWORD`; nunca se escribe en Git.
+
+```bash
+npm run create-admin -- --name=Daniel --email=daniel@tu-dominio.com
+npm run create-admin -- --name=Amy --email=amy@tu-dominio.com
+npm run create-admin -- --name=Sarah --email=sarah@tu-dominio.com
+npm run create-admin -- --name=Jowell --email=jowell@tu-dominio.com
+```
+
+El script almacena únicamente un hash bcrypt con coste 12.
+
+### Ejecutar y validar
+
+```bash
+npm install
+npm run dev
+npm run lint
+npm test
+```
+
+Sin `DATABASE_URL`, la landing continúa funcionando y `/admin/login` se muestra, pero el inicio de sesión responderá con un error controlado hasta completar Neon.
