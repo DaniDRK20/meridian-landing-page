@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { navItems } from "./workspace-data";
 import { useWorkspace } from "./workspace-store";
-import { useRealtime } from "./realtime-provider";
+import { PresenceSummary, useRealtime } from "./realtime-provider";
 
 export function WorkspaceShell({ user, children }: { user: { id: string; name: string; email: string }; children: ReactNode }) {
   const pathname = usePathname(); const router = useRouter(); const [open, setOpen] = useState(false); const [query, setQuery] = useState(""); const [searchOpen, setSearchOpen] = useState(false); const [toast,setToast]=useState<{title:string;body:string;mentioned:boolean}|null>(null); const searchRef = useRef<HTMLInputElement>(null); const realtime=useRealtime();
@@ -34,7 +34,7 @@ export function WorkspaceShell({ user, children }: { user: { id: string; name: s
     {open && <button className="sidebar-scrim" aria-label="Cerrar navegación" onClick={() => setOpen(false)} />}
     <div className="workspace-main">
       <header className="workspace-topbar"><button className="sidebar-toggle" onClick={() => setOpen(value => !value)} aria-label="Abrir navegación">☰</button><div className="global-search-wrap"><label className="global-search"><span aria-hidden="true">⌕</span><input ref={searchRef} value={query} onChange={event => { setQuery(event.target.value); setSearchOpen(true); }} onFocus={() => setSearchOpen(true)} onKeyDown={event => { if (event.key === "Escape") { setSearchOpen(false); searchRef.current?.blur(); } }} placeholder="Buscar tareas, personas o documentos…" aria-label="Buscar en Workspace" aria-expanded={searchOpen && query.trim().length >= 2} aria-controls="workspace-search-results" /><kbd>Ctrl K</kbd></label>{searchOpen && query.trim().length >= 2 && <div className="global-search-results" id="workspace-search-results" role="listbox">{results.length ? results.map((result, index) => <button key={`${result.type}-${result.title}-${index}`} role="option" onMouseDown={event => event.preventDefault()} onClick={() => { setQuery(""); setSearchOpen(false); router.push(result.href); }}><i>{result.type}</i><span><b>{result.title}</b><small>{result.meta}</small></span><strong>→</strong></button>) : <p>No encontramos resultados para “{query.trim()}”.</p>}</div>}</div><span className="sprint-pill">Workspace · Activo</span><span className="top-avatar" title={user.name}>{user.name.slice(0, 2).toUpperCase()}</span><button className="top-logout" onClick={logout} aria-label="Cerrar sesión" title="Cerrar sesión"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H6a2 2 0 00-2 2v10a2 2 0 002 2h4M14 8l4 4-4 4M9 12h9"/></svg><span>Salir</span></button></header>
-      <main className="workspace-content">{children}</main>
+      <main className="workspace-content"><PresenceSummary/>{children}</main>
       {toast&&<button className={`workspace-toast ${toast.mentioned?"mentioned":""}`} onClick={()=>{setToast(null);if("Notification" in window&&Notification.permission==="default")void Notification.requestPermission();router.push("/admin/chat")}}><i>✦</i><span><b>{toast.title}</b><small>{toast.body}</small></span><strong>→</strong></button>}
     </div>
   </div>;
