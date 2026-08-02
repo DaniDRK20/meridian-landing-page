@@ -22,6 +22,7 @@ export function LoginForm({ siteKey }: { siteKey: string }) {
     widgetId.current = window.turnstile.render(widgetRef.current, {
       sitekey: siteKey,
       theme: "light",
+      appearance: "interaction-only",
       callback: (value: string) => setToken(value),
       "expired-callback": () => setToken(""),
       "error-callback": () => setToken(""),
@@ -49,7 +50,16 @@ export function LoginForm({ siteKey }: { siteKey: string }) {
       <label htmlFor="admin-email">Correo electrónico</label>
       <input id="admin-email" name="email" type="email" autoComplete="username" required />
       <label htmlFor="admin-password">Contraseña</label>
-      <div className="password-field"><input id="admin-password" name="password" type={visible ? "text" : "password"} minLength={10} autoComplete="current-password" required /><button type="button" onClick={() => setVisible(value => !value)}>{visible ? "Ocultar" : "Mostrar"}</button></div>
+      <div className="password-field">
+        <input id="admin-password" name="password" type={visible ? "text" : "password"} minLength={10} autoComplete="current-password" required />
+        <button type="button" className="password-toggle" onClick={() => setVisible(value => !value)} aria-label={visible ? "Ocultar contraseña" : "Mostrar contraseña"} aria-pressed={visible} title={visible ? "Ocultar contraseña" : "Mostrar contraseña"}>
+          {visible ? (
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 10.7a2 2 0 002.7 2.7M9.9 4.2A10.8 10.8 0 0112 4c5.5 0 9 5.2 9 5.2a14 14 0 01-2.4 2.8M6.2 6.2C4.2 7.6 3 9.2 3 9.2s3.5 5.2 9 5.2c1 0 2-.2 2.8-.5" /></svg>
+          ) : (
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12s3.5-5.2 9-5.2 9 5.2 9 5.2-3.5 5.2-9 5.2S3 12 3 12z" /><circle cx="12" cy="12" r="2.5" /></svg>
+          )}
+        </button>
+      </div>
       <div ref={widgetRef} className="turnstile-slot" aria-label="Verificación de seguridad" />
       {error && <p className="admin-error" role="alert">{error}</p>}
       <button className="admin-primary" type="submit" disabled={loading || !token}>{loading ? "Verificando…" : "Iniciar sesión"}</button>
