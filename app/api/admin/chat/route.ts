@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/lib/admin-db";
 import { getAdminSession } from "@/lib/admin-session";
+import { publishWorkspaceEvent } from "@/lib/ably";
 
 const bad=(error:string,status=400)=>NextResponse.json({ok:false,error},{status});
 const clean=(value:unknown,max:number)=>String(value??"").trim().slice(0,max);
@@ -23,8 +24,10 @@ export async function POST(request:NextRequest){
  const channel=await sql`select id from workspace_chat_channels where id=${channelId} limit 1`;if(!channel.length)return bad("El canal no existe.",404);
  const rows=await sql`insert into workspace_chat_messages(channel_id,author_id,reply_to_id,content) values(${channelId},${user.id},${replyTo},${content}) returning *`;
  const ids=Array.isArray(data.mentionIds)?data.mentionIds.map((id:unknown)=>clean(id,50)).filter(Boolean).slice(0,30):[];for(const id of ids)await sql`insert into workspace_chat_mentions(message_id,user_id) select ${rows[0].id},id from admin_users where id=${id} and is_active=true on conflict do nothing`;
- await sql`insert into workspace_chat_reads(channel_id,user_id,last_read_at) values(${channelId},${user.id},now()) on conflict(channel_id,user_id) do update set last_read_at=now()`;return NextResponse.json({ok:true,item:rows[0]},{status:201});
+ await sql`insert into workspace_chat_reads(channel_id,user_id,last_read_at) values(${channelId},${user.id},now()) on conflict(channel_id,user_id) do update set last_read_at=now()`;
+ await publishWorkspaceEvent("chat.message",{messageId:rows[0].id,channelId,authorId:user.id,authorName:user.name,content,mentionIds:ids});
+ return NextResponse.json({ok:true,item:rows[0]},{status:201});
 }
 
-export async function PATCH(request:NextRequest){const user=await getAdminSession();if(!user)return bad("No autorizado.",401);const data=await request.json(),id=clean(data.id,50),content=clean(data.content,4000);if(!id||!content)return bad("Mensaje inválido.");const sql=adminDb();const rows=await sql`update workspace_chat_messages set content=${content},edited_at=now() where id=${id} and author_id=${user.id} returning id`;return rows.length?NextResponse.json({ok:true}):bad("No puedes editar este mensaje.",403)}
-export async function DELETE(request:NextRequest){const user=await getAdminSession();if(!user)return bad("No autorizado.",401);const id=clean((await request.json()).id,50),sql=adminDb();const rows=await sql`delete from workspace_chat_messages where id=${id} and (author_id=${user.id} or ${user.role}='admin') returning id`;return rows.length?NextResponse.json({ok:true}):bad("No puedes eliminar este mensaje.",403)}
+export async function PATCH(request:NextRequest){const user=await getAdminSession();if(!user)return bad("No autorizado.",401);const data=await request.json(),id=clean(data.id,50),content=clean(data.content,4000);if(!id||!content)return bad("Mensaje inválido.");const sql=adminDb();const rows=await sql`update workspace_chat_messages set content=${content},edited_at=now() where id=${id} and author_id=${user.id} returning id,channel_id`;if(rows.length)await publishWorkspaceEvent("chat.updated",{messageId:id,channelId:rows[0].channel_id,authorId:user.id});return rows.length?NextResponse.json({ok:true}):bad("No puedes editar este mensaje.",403)}
+export async function DELETE(request:NextRequest){const user=await getAdminSession();if(!user)return bad("No autorizado.",401);const id=clean((await request.json()).id,50),sql=adminDb();const existing=await sql`select channel_id from workspace_chat_messages where id=${id} limit 1`;const rows=await sql`delete from workspace_chat_messages where id=${id} and (author_id=${user.id} or ${user.role}='admin') returning id`;if(rows.length)await publishWorkspaceEvent("chat.deleted",{messageId:id,channelId:existing[0]?.channel_id,authorId:user.id});return rows.length?NextResponse.json({ok:true}):bad("No puedes eliminar este mensaje.",403)}
