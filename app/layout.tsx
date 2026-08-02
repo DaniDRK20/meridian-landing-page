@@ -4,7 +4,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Meridian — Innovación al servicio del talento humano",
   description: "Software, agentes de inteligencia artificial e integraciones que amplifican la capacidad de los equipos.",
-  icons: { icon: "/favicon.svg" },
+  icons: {
+    icon: [{ url: "/meridian-globe-transparent.png", type: "image/png" }],
+    shortcut: "/meridian-globe-transparent.png",
+    apple: "/meridian-globe-transparent.png",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{children: React.ReactNode}>) {
