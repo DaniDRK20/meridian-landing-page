@@ -41,4 +41,13 @@ html:has(.workspace-monochrome),body:has(.workspace-monochrome){min-height:100%;
 .workspace-monochrome .danger-button{background:#2a1718;border-color:#633235;color:#ff9993}
 .workspace-monochrome .nav-unread{border-color:#0c0e12}
 .workspace-monochrome .workspace-toast>i{background:#f0f2f6;color:#0b0c0f}
+.workspace-monochrome .sprint-selector,.workspace-monochrome .sprint-backlog-layout>section,.workspace-monochrome .sprint-tabs>button{background:#111318;color:#f3f5f8}
+.workspace-monochrome .sprint-selector select,.workspace-monochrome .backlog-section-head input{background:#181b21;color:#f3f5f8;border-color:#303641}
+.workspace-monochrome .sprint-selector option{background:#181b21;color:#f3f5f8}
+.workspace-monochrome .sprint-task-list>article{background:#15181e;border-color:#303641}
+.workspace-monochrome .sprint-task-list>article:hover{border-color:#4b5360;box-shadow:0 8px 22px rgba(0,0,0,.24)}
+.workspace-monochrome .sprint-status{background:#242933;color:#b9c0cb}
+.workspace-monochrome .sprint-status.active{background:#132a21;color:#66dda6}
+.workspace-monochrome .sprint-status.planned{background:#1c2335;color:#91a5ff}
+.workspace-monochrome .sprint-status.closed{background:#20242b;color:#969eaa}
 @media(max-width:820px){.workspace-monochrome .workspace-sidebar{background:#0c0e12}.workspace-monochrome .sidebar-scrim{background:rgba(0,0,0,.7)}}
