@@ -306,9 +306,9 @@ export default function ChatPage() {
                 </article>
               );
             })}
+            {typingUsers.length>0&&<div className="chat-typing-row"><span className="avatar">{typingUsers[0].slice(0,2).toUpperCase()}</span><div><small>{typingUsers.join(", ")} {typingUsers.length===1?"está":"están"} escribiendo…</small><span className="chat-typing-bubble"><i/><i/><i/></span></div></div>}
             <div ref={bottom} />
           </div>
-          <div className={`chat-typing ${typingUsers.length?"visible":""}`}>{typingUsers.length?`${typingUsers.join(", ")} ${typingUsers.length===1?"está":"están"} escribiendo…`:" "}<i/><i/><i/></div>
           <form className="chat-composer" onSubmit={send}>
             {(reply || editing) && (
               <div className="chat-context">
