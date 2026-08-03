@@ -9,7 +9,7 @@ export async function GET() {
   if (!ably) return NextResponse.json({ error: "Ably no está configurado." }, { status: 503 });
   const tokenRequest = await ably.auth.createTokenRequest({
     clientId: user.id,
-    capability: JSON.stringify({ [ABLY_CHANNEL]: ["subscribe", "presence"] }),
+    capability: JSON.stringify({ [ABLY_CHANNEL]: ["subscribe", "publish"] }),
     ttl: 60 * 60 * 1000,
   });
   return NextResponse.json(tokenRequest);

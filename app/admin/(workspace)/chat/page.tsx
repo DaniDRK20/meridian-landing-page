@@ -35,9 +35,12 @@ export default function ChatPage() {
     [editing, setEditing] = useState<Message | null>(null),
     [newChannel, setNewChannel] = useState(false),
     [editingChannel, setEditingChannel] = useState<Channel | null>(null),
+    [typingUsers, setTypingUsers] = useState<string[]>([]),
     [error, setError] = useState("");
   const bottom = useRef<HTMLDivElement>(null),
     textarea = useRef<HTMLTextAreaElement>(null),
+    typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null),
+    remoteTypingTimers = useRef(new Map<string,ReturnType<typeof setTimeout>>()),
     realtime = useRealtime();
   const load = useCallback(
     async (id?: string, quiet = false) => {
@@ -67,7 +70,7 @@ export default function ChatPage() {
     const initial = setTimeout(() => void load(channel || undefined), 0),
       timer = setInterval(
         () => void load(channel || undefined, true),
-        realtime ? 30000 : 5000,
+        2000,
       );
     return () => {
       clearTimeout(initial);
@@ -86,6 +89,9 @@ export default function ChatPage() {
       live.unsubscribe(listener);
     };
   }, [realtime, channel, load]);
+  useEffect(()=>{if(!realtime||!data?.currentUser)return;const live=realtime.channels.get("meridian:workspace"),listener=(message:{data?:{channelId?:string;userId?:string;userName?:string;typing?:boolean}})=>{const info=message.data;if(!info?.userId||info.userId===data.currentUser.id||info.channelId!==channel)return;const previous=remoteTypingTimers.current.get(info.userId);if(previous)clearTimeout(previous);setTypingUsers(users=>info.typing?[...new Set([...users,info.userName||"Alguien"])]:users.filter(name=>name!==info.userName));if(info.typing){const timer=setTimeout(()=>setTypingUsers(users=>users.filter(name=>name!==info.userName)),2200);remoteTypingTimers.current.set(info.userId,timer)}};live.subscribe("chat.typing",listener);const timers=remoteTypingTimers.current;return()=>{live.unsubscribe("chat.typing",listener);timers.forEach(clearTimeout);timers.clear();setTypingUsers([])}},[realtime,channel,data?.currentUser]);
+  const publishTyping=(typing:boolean)=>{if(!realtime||!data?.currentUser||!channel)return;void realtime.channels.get("meridian:workspace").publish("chat.typing",{channelId:channel,userId:data.currentUser.id,userName:data.currentUser.name,typing}).catch(()=>undefined)};
+  const updateText=(value:string)=>{setText(value);publishTyping(Boolean(value.trim()));if(typingTimer.current)clearTimeout(typingTimer.current);typingTimer.current=setTimeout(()=>publishTyping(false),1400)};
   const mentionIds =
       data?.users
         .filter((user) =>
@@ -119,6 +125,7 @@ export default function ChatPage() {
       return;
     }
     setText("");
+    publishTyping(false);
     setReply(null);
     setEditing(null);
     await load(channel);
@@ -301,6 +308,7 @@ export default function ChatPage() {
             })}
             <div ref={bottom} />
           </div>
+          <div className={`chat-typing ${typingUsers.length?"visible":""}`}>{typingUsers.length?`${typingUsers.join(", ")} ${typingUsers.length===1?"está":"están"} escribiendo…`:" "}<i/><i/><i/></div>
           <form className="chat-composer" onSubmit={send}>
             {(reply || editing) && (
               <div className="chat-context">
@@ -327,7 +335,7 @@ export default function ChatPage() {
               value={text}
               maxLength={4000}
               placeholder={`Mensaje en #${data?.channels.find((item) => item.id === channel)?.name || "general"}`}
-              onChange={(e) => setText(e.target.value)}
+              onChange={(e) => updateText(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
