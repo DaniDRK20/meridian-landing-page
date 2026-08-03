@@ -7,6 +7,8 @@ type Channel = {
   slug: string;
   description: string;
   unread_count: number;
+  kind: "channel" | "direct";
+  display_name: string;
 };
 type User = { id: string; name: string; email: string };
 type Message = {
@@ -34,6 +36,7 @@ export default function ChatPage() {
     [reply, setReply] = useState<Message | null>(null),
     [editing, setEditing] = useState<Message | null>(null),
     [newChannel, setNewChannel] = useState(false),
+    [directPicker, setDirectPicker] = useState(false),
     [editingChannel, setEditingChannel] = useState<Channel | null>(null),
     [typingUsers, setTypingUsers] = useState<string[]>([]),
     [error, setError] = useState("");
@@ -161,12 +164,7 @@ export default function ChatPage() {
           <h1>Chat del equipo</h1>
           <p>Conversaciones, respuestas y menciones en un solo lugar.</p>
         </div>
-        <button
-          className="secondary-button"
-          onClick={() => setNewChannel(true)}
-        >
-          + Canal
-        </button>
+        <div className="chat-create-actions"><button className="secondary-button" onClick={() => setDirectPicker(true)}><span className="material-symbols-rounded">person_add</span> Mensaje directo</button><button className="secondary-button" onClick={() => setNewChannel(true)}><span className="material-symbols-rounded">add</span> Canal</button></div>
       </div>
       <section className="chat-shell">
         <aside className="chat-channels">
@@ -180,9 +178,9 @@ export default function ChatPage() {
               className={channel === item.id ? "active" : ""}
               onClick={() => setChannel(item.id)}
             >
-              <span>#</span>
+              <span className="material-symbols-rounded">{item.kind==="direct"?"person":"tag"}</span>
               <i>
-                <b>{item.name}</b>
+                <b>{item.display_name||item.name}</b>
                 <small>{item.description}</small>
               </i>
               {item.unread_count > 0 && <em>{item.unread_count}</em>}
@@ -193,8 +191,8 @@ export default function ChatPage() {
           <header>
             <div>
               <b>
-                #{" "}
-                {data?.channels.find((item) => item.id === channel)?.name ||
+                {data?.channels.find((item) => item.id === channel)?.kind==="direct"?"":"# "}
+                {data?.channels.find((item) => item.id === channel)?.display_name ||
                   "Chat"}
               </b>
               <small>
@@ -208,7 +206,7 @@ export default function ChatPage() {
               <span>
                 <i /> Actualización automática
               </span>
-              <button
+              {data?.channels.find((item) => item.id === channel)?.kind!=="direct"&&<button
                 type="button"
                 onClick={() =>
                   setEditingChannel(
@@ -217,7 +215,7 @@ export default function ChatPage() {
                 }
               >
                 Editar canal
-              </button>
+              </button>}
             </div>
           </header>
           <div className="chat-feed">
@@ -338,7 +336,7 @@ export default function ChatPage() {
               ref={textarea}
               value={text}
               maxLength={4000}
-              placeholder={`Mensaje en #${data?.channels.find((item) => item.id === channel)?.name || "general"}`}
+              placeholder={`Mensaje para ${data?.channels.find((item) => item.id === channel)?.display_name || "general"}`}
               onChange={(e) => updateText(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
@@ -383,6 +381,7 @@ export default function ChatPage() {
           </form>
         </div>
       </section>
+      {directPicker&&<div className="modal-backdrop"><section className="workspace-modal direct-picker"><header><div><h2>Nuevo mensaje</h2><p>Elige una persona para abrir una conversación privada.</p></div><button onClick={()=>setDirectPicker(false)}>×</button></header><div>{data?.users.filter(member=>member.id!==data.currentUser.id).map(member=><button key={member.id} onClick={async()=>{const response=await fetch("/api/admin/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"direct",memberId:member.id})}),result=await response.json();if(!response.ok){setError(result.error);return}setDirectPicker(false);setChannel(result.item.id);await load(result.item.id)}}><span className="avatar">{member.name.slice(0,2).toUpperCase()}</span><span><b>{member.name}</b><small>{member.email}</small></span><i className="material-symbols-rounded">chevron_right</i></button>)}</div></section></div>}
       {(newChannel || editingChannel) && (
         <div className="modal-backdrop">
           <section className="workspace-modal">

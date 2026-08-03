@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   const requested = clean(request.nextUrl.searchParams.get("channel"), 50),
     summary = request.nextUrl.searchParams.get("summary") === "1";
   const [channels, users] = await Promise.all([
-    sql`select c.*,count(m.id) filter(where m.created_at>coalesce(r.last_read_at,to_timestamp(0)) and m.author_id<>${user.id})::int unread_count from workspace_chat_channels c left join workspace_chat_reads r on r.channel_id=c.id and r.user_id=${user.id} left join workspace_chat_messages m on m.channel_id=c.id group by c.id,r.last_read_at order by c.created_at`,
+    sql`select c.*,case when c.kind='direct' then coalesce((select u.name from workspace_chat_channel_members cm join admin_users u on u.id=cm.user_id where cm.channel_id=c.id and cm.user_id<>${user.id} limit 1),c.name) else c.name end display_name,count(m.id) filter(where m.created_at>coalesce(r.last_read_at,to_timestamp(0)) and m.author_id<>${user.id})::int unread_count from workspace_chat_channels c left join workspace_chat_reads r on r.channel_id=c.id and r.user_id=${user.id} left join workspace_chat_messages m on m.channel_id=c.id where c.kind='channel' or exists(select 1 from workspace_chat_channel_members mine where mine.channel_id=c.id and mine.user_id=${user.id}) group by c.id,r.last_read_at order by c.kind,c.created_at`,
     sql`select id,name,email from admin_users where is_active=true order by name`,
   ]);
   if (summary) {
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
         exists(select 1 from workspace_chat_mentions mm where mm.message_id=m.id and mm.user_id=${user.id}) mentioned
       from workspace_chat_messages m
       join admin_users u on u.id=m.author_id
-      where m.author_id<>${user.id}
+      where m.author_id<>${user.id} and (exists(select 1 from workspace_chat_channels c where c.id=m.channel_id and c.kind='channel') or exists(select 1 from workspace_chat_channel_members mine where mine.channel_id=m.channel_id and mine.user_id=${user.id}))
       order by m.created_at desc limit 1
     `;
     return NextResponse.json({
@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
     });
   }
   const selected = requested || String(channels[0]?.id || "");
+  if (selected && !channels.some(item => String(item.id) === selected)) return bad("No tienes acceso a esta conversación.", 403);
   const messages = selected
     ? await sql`select m.id,m.channel_id,m.content,m.created_at,m.edited_at,m.author_id,u.name author_name,u.email author_email,r.id reply_id,r.content reply_content,ru.name reply_author,coalesce(array_agg(distinct mu.name) filter(where mu.id is not null),'{}') mentioned_names from workspace_chat_messages m join admin_users u on u.id=m.author_id left join workspace_chat_messages r on r.id=m.reply_to_id left join admin_users ru on ru.id=r.author_id left join workspace_chat_mentions mm on mm.message_id=m.id left join admin_users mu on mu.id=mm.user_id where m.channel_id=${selected} group by m.id,u.id,r.id,ru.id order by m.created_at desc limit 100`
     : [];
@@ -58,6 +59,19 @@ export async function POST(request: NextRequest) {
   if (!user) return bad("No autorizado.", 401);
   const data = await request.json();
   const sql = adminDb();
+  if (data.action === "direct") {
+    const memberId = clean(data.memberId, 50);
+    if (!memberId || memberId === user.id) return bad("Selecciona otro integrante.");
+    const member = await sql`select id,name from admin_users where id=${memberId} and is_active=true limit 1`;
+    if (!member.length) return bad("El integrante no existe.", 404);
+    const pair = [user.id, memberId].sort(), slug = `dm-${pair.join("-")}`;
+    let rows = await sql`select * from workspace_chat_channels where slug=${slug} limit 1`;
+    if (!rows.length) {
+      rows = await sql`insert into workspace_chat_channels(name,slug,description,created_by,kind) values('Mensaje directo',${slug},'Conversación privada',${user.id},'direct') on conflict(slug) do update set slug=excluded.slug returning *`;
+      await sql`insert into workspace_chat_channel_members(channel_id,user_id) values(${rows[0].id},${user.id}),(${rows[0].id},${memberId}) on conflict do nothing`;
+    }
+    return NextResponse.json({ok:true,item:{...rows[0],display_name:member[0].name}}, {status:201});
+  }
   if (data.action === "channel") {
     const name = clean(data.name, 80);
     const slug = name
@@ -85,7 +99,7 @@ export async function POST(request: NextRequest) {
     replyTo = clean(data.replyTo, 50) || null;
   if (!channelId || !content) return bad("El mensaje no puede estar vacío.");
   const channel =
-    await sql`select id from workspace_chat_channels where id=${channelId} limit 1`;
+    await sql`select id from workspace_chat_channels c where c.id=${channelId} and (c.kind='channel' or exists(select 1 from workspace_chat_channel_members cm where cm.channel_id=c.id and cm.user_id=${user.id})) limit 1`;
   if (!channel.length) return bad("El canal no existe.", 404);
   const rows =
     await sql`insert into workspace_chat_messages(channel_id,author_id,reply_to_id,content) values(${channelId},${user.id},${replyTo},${content}) returning *`;
@@ -127,8 +141,9 @@ export async function PATCH(request: NextRequest) {
       return bad("Escribe un nombre válido para el canal.");
     const sql = adminDb();
     const protectedChannel =
-      await sql`select slug from workspace_chat_channels where id=${id} limit 1`;
+      await sql`select slug,kind from workspace_chat_channels where id=${id} limit 1`;
     if (!protectedChannel.length) return bad("El canal no existe.", 404);
+    if (protectedChannel[0].kind === "direct") return bad("Los chats directos no se editan.", 403);
     if (protectedChannel[0].slug === "general" && slug !== "general")
       return bad("El canal General no puede cambiar de nombre.");
     try {
@@ -168,7 +183,7 @@ export async function DELETE(request: NextRequest) {
     sql = adminDb();
   if (data.action === "channel") {
     const target =
-      await sql`select slug from workspace_chat_channels where id=${id} limit 1`;
+      await sql`select slug,kind from workspace_chat_channels where id=${id} and (kind='channel' or exists(select 1 from workspace_chat_channel_members cm where cm.channel_id=${id} and cm.user_id=${user.id})) limit 1`;
     if (!target.length) return bad("El canal no existe.", 404);
     if (target[0].slug === "general")
       return bad("El canal General no se puede eliminar.");

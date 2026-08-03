@@ -1,6 +1,6 @@
 export const navItems = [
-  ["Chat", "/admin/chat", "#"],
-  ["Dashboard", "/admin", "⌂"], ["Workspace", "/admin/workspace", "◇"], ["Kanban", "/admin/kanban", "▦"], ["Product Backlog", "/admin/backlog", "≡"], ["Sprint Backlog", "/admin/sprint-backlog", "☷"], ["Sprint", "/admin/sprint", "◷"], ["Equipo", "/admin/equipo", "◎"], ["Calendario", "/admin/calendario", "□"], ["Documentación", "/admin/documentacion", "▤"], ["Configuración", "/admin/configuracion", "⚙"], ["Perfil", "/admin/perfil", "○"],
+  ["Chat", "/admin/chat", "chat_bubble"],
+  ["Dashboard", "/admin", "space_dashboard"], ["Workspace", "/admin/workspace", "workspaces"], ["Kanban", "/admin/kanban", "view_kanban"], ["Product Backlog", "/admin/backlog", "format_list_bulleted"], ["Sprint Backlog", "/admin/sprint-backlog", "splitscreen"], ["Sprint", "/admin/sprint", "timer"], ["Equipo", "/admin/equipo", "groups"], ["Calendario", "/admin/calendario", "calendar_month"], ["Documentación", "/admin/documentacion", "description"], ["Configuración", "/admin/configuracion", "settings"], ["Perfil", "/admin/perfil", "account_circle"],
 ] as const;
 
 export const tasks = [

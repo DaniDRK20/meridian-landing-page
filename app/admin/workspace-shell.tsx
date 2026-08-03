@@ -29,7 +29,7 @@ export function WorkspaceShell({ user, children }: { user: { id: string; name: s
   return <div className="workspace-root">
     <aside className={`workspace-sidebar ${open ? "is-open" : ""}`}>
       <Link className="workspace-brand" href="/"><img src="/meridian-globe-transparent.png" alt="" /><span>Meridian <small>Workspace</small></span></Link>
-      <nav aria-label="Navegación del Workspace">{navItems.map(([label, href, icon]) => <Link key={href} className={pathname === href ? "active" : ""} href={href} onClick={() => {setOpen(false);if(href==="/admin/chat"){setUnread(0);unreadRef.current=0}}}><i aria-hidden="true">{icon}</i>{label}{href==="/admin/chat"&&unread>0&&<em className="nav-unread">{unread>99?"99+":unread}</em>}</Link>)}</nav>
+      <nav aria-label="Navegación del Workspace">{navItems.map(([label, href, icon]) => <Link key={href} className={pathname === href ? "active" : ""} href={href} onClick={() => {setOpen(false);if(href==="/admin/chat"){setUnread(0);unreadRef.current=0}}}><i className="material-symbols-rounded" aria-hidden="true">{icon}</i>{label}{href==="/admin/chat"&&unread>0&&<em className="nav-unread">{unread>99?"99+":unread}</em>}</Link>)}</nav>
       <div className="workspace-profile"><span className="avatar">{user.name.slice(0, 2).toUpperCase()}</span><span><b>{user.name}</b><small>{user.email}</small></span></div>
       <button className="workspace-logout" onClick={logout}>Cerrar sesión</button>
     </aside>
