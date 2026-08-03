@@ -13,8 +13,8 @@ export const metadata: Metadata = {
   robots:{index:true,follow:true,googleBot:{index:true,follow:true,"max-image-preview":"large","max-snippet":-1,"max-video-preview":-1}},
   manifest:"/manifest.webmanifest",
   icons: {
-    icon: [{ url: "/favicon-rounded.svg", type: "image/svg+xml" }],
-    shortcut: "/favicon-rounded.svg",
+    icon: [{ url: "/favicon-rounded.svg?v=3", type: "image/svg+xml" }],
+    shortcut: "/favicon-rounded.svg?v=3",
     apple: "/meridian-globe.png",
   },
 };

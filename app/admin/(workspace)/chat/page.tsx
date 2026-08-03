@@ -1,7 +1,7 @@
 "use client";
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useRealtime, useWorkspacePresence } from "../../realtime-provider";
-import {ChevronRight,Hash,Plus,UserPlus,UserRound} from "lucide-react";
+import {ChevronRight,Hash,Plus,Trash2,UserPlus,UserRound} from "lucide-react";
 type Channel = {
   id: string;
   name: string;
@@ -156,6 +156,23 @@ export default function ChatPage() {
         body: JSON.stringify({ id }),
       });
       await load(channel);
+    },
+    deleteChannel = async (item: Channel) => {
+      if (!confirm(`¿Eliminar #${item.name} y todos sus mensajes?`)) return;
+      const response = await fetch("/api/admin/chat", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "channel", id: item.id }),
+        }),
+        result = await response.json();
+      if (!response.ok) {
+        setError(result.error);
+        return;
+      }
+      setEditingChannel(null);
+      setNewChannel(false);
+      setChannel(result.nextChannelId || "");
+      await load(result.nextChannelId || undefined);
     };
   return (
     <div className="chat-page">
@@ -166,6 +183,10 @@ export default function ChatPage() {
           <p>Conversaciones, respuestas y menciones en un solo lugar.</p>
         </div>
         <div className="chat-create-actions"><button className="secondary-button" onClick={() => setDirectPicker(true)}><UserPlus size={17}/> Mensaje directo</button><button className="secondary-button" onClick={() => setNewChannel(true)}><Plus size={17}/> Canal</button></div>
+      </div>
+      <div className="chat-mobile-actions" aria-label="Acciones del chat">
+        <button className="secondary-button" onClick={() => setDirectPicker(true)}><UserPlus size={17}/> Mensaje directo</button>
+        <button className="secondary-button" onClick={() => setNewChannel(true)}><Plus size={17}/> Canal</button>
       </div>
       <section className="chat-shell">
         <aside className="chat-channels">
@@ -207,16 +228,16 @@ export default function ChatPage() {
               <span>
                 <i /> Actualización automática
               </span>
-              {data?.channels.find((item) => item.id === channel)?.kind!=="direct"&&<button
-                type="button"
-                onClick={() =>
-                  setEditingChannel(
-                    data?.channels.find((item) => item.id === channel) || null,
-                  )
-                }
-              >
-                Editar canal
-              </button>}
+              {data?.channels.find((item) => item.id === channel)?.kind!=="direct"&&<>
+                <button type="button" onClick={() => setEditingChannel(data?.channels.find((item) => item.id === channel) || null)}>Editar canal</button>
+                {data?.channels.find((item) => item.id === channel)?.slug!=="general"&&<button
+                  type="button"
+                  className="chat-delete-channel"
+                  aria-label="Eliminar canal"
+                  title="Eliminar canal"
+                  onClick={() => {const item=data?.channels.find((entry)=>entry.id===channel);if(item)void deleteChannel(item)}}
+                ><Trash2 size={16}/><span>Eliminar</span></button>}
+              </>}
             </div>
           </header>
           <div className="chat-feed">
@@ -435,7 +456,7 @@ export default function ChatPage() {
                 />
               </label>
               <footer className="form-actions full">
-                {editingChannel && editingChannel.slug !== "general" && <button type="button" className="danger-button" onClick={async()=>{if(!confirm(`¿Eliminar #${editingChannel.name} y todos sus mensajes?`))return;const response=await fetch("/api/admin/chat",{method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"channel",id:editingChannel.id})}),result=await response.json();if(!response.ok){setError(result.error);return}setEditingChannel(null);setNewChannel(false);setChannel(result.nextChannelId||"");await load(result.nextChannelId||undefined)}}>Eliminar canal</button>}
+                {editingChannel && editingChannel.slug !== "general" && <button type="button" className="danger-button" onClick={()=>void deleteChannel(editingChannel)}><Trash2 size={16}/> Eliminar canal</button>}
                 <button
                   type="button"
                   className="secondary-button"
