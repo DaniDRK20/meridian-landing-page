@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 
 const services = [
   { n: "01", title: "Agentes de IA", text: "Agentes que atienden, clasifican, redactan y ejecutan dentro de tus sistemas, con supervisión humana en cada punto crítico.", tags: ["Soporte", "Ventas", "Back office"], dark: true },
@@ -11,7 +12,7 @@ const services = [
 ];
 
 function Logo() {
-  return <a className="logo" href="#inicio" aria-label="Meridian, inicio"><img className="brand-logo" src="/meridian-globe-transparent.png" alt="" /><span>Meridian</span></a>;
+  return <a className="logo" href="#inicio" aria-label="Meridian, inicio"><Image className="brand-logo" src="/meridian-globe-transparent.png" width={29} height={29} alt="" priority /><span>Meridian</span></a>;
 }
 
 function Header() {
@@ -130,7 +131,7 @@ function ContactForm() {
 
 function Globe({ dark = false }: { dark?: boolean }) {
   return <div className={`globe ${dark ? "globe-dark" : ""}`}>
-    <img src="/meridian-globe-transparent.png" alt="Globo digital que simboliza tecnología centrada en las personas" />
+    <Image src="/meridian-globe-transparent.png" width={1254} height={1254} sizes="(max-width: 900px) 90vw, 52vw" priority={!dark} alt="Globo digital que simboliza tecnología centrada en las personas" />
     {!dark && <span className="planet-ring" aria-hidden="true"><i /></span>}
   </div>;
 }

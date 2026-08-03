@@ -1,6 +1,7 @@
 "use client";
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useRealtime, useWorkspacePresence } from "../../realtime-provider";
+import {ChevronRight,Hash,Plus,UserPlus,UserRound} from "lucide-react";
 type Channel = {
   id: string;
   name: string;
@@ -164,7 +165,7 @@ export default function ChatPage() {
           <h1>Chat del equipo</h1>
           <p>Conversaciones, respuestas y menciones en un solo lugar.</p>
         </div>
-        <div className="chat-create-actions"><button className="secondary-button" onClick={() => setDirectPicker(true)}><span className="material-symbols-rounded">person_add</span> Mensaje directo</button><button className="secondary-button" onClick={() => setNewChannel(true)}><span className="material-symbols-rounded">add</span> Canal</button></div>
+        <div className="chat-create-actions"><button className="secondary-button" onClick={() => setDirectPicker(true)}><UserPlus size={17}/> Mensaje directo</button><button className="secondary-button" onClick={() => setNewChannel(true)}><Plus size={17}/> Canal</button></div>
       </div>
       <section className="chat-shell">
         <aside className="chat-channels">
@@ -178,7 +179,7 @@ export default function ChatPage() {
               className={channel === item.id ? "active" : ""}
               onClick={() => setChannel(item.id)}
             >
-              <span className="material-symbols-rounded">{item.kind==="direct"?"person":"tag"}</span>
+              <span>{item.kind==="direct"?<UserRound size={18}/>:<Hash size={18}/>}</span>
               <i>
                 <b>{item.display_name||item.name}</b>
                 <small>{item.description}</small>
@@ -381,7 +382,7 @@ export default function ChatPage() {
           </form>
         </div>
       </section>
-      {directPicker&&<div className="modal-backdrop"><section className="workspace-modal direct-picker"><header><div><h2>Nuevo mensaje</h2><p>Elige una persona para abrir una conversación privada.</p></div><button onClick={()=>setDirectPicker(false)}>×</button></header><div>{data?.users.filter(member=>member.id!==data.currentUser.id).map(member=><button key={member.id} onClick={async()=>{const response=await fetch("/api/admin/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"direct",memberId:member.id})}),result=await response.json();if(!response.ok){setError(result.error);return}setDirectPicker(false);setChannel(result.item.id);await load(result.item.id)}}><span className="avatar">{member.name.slice(0,2).toUpperCase()}</span><span><b>{member.name}</b><small>{member.email}</small></span><i className="material-symbols-rounded">chevron_right</i></button>)}</div></section></div>}
+      {directPicker&&<div className="modal-backdrop"><section className="workspace-modal direct-picker"><header><div><h2>Nuevo mensaje</h2><p>Elige una persona para abrir una conversación privada.</p></div><button onClick={()=>setDirectPicker(false)}>×</button></header><div>{data?.users.filter(member=>member.id!==data.currentUser.id).map(member=><button key={member.id} onClick={async()=>{const response=await fetch("/api/admin/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"direct",memberId:member.id})}),result=await response.json();if(!response.ok){setError(result.error);return}setDirectPicker(false);setChannel(result.item.id);await load(result.item.id)}}><span className="avatar">{member.name.slice(0,2).toUpperCase()}</span><span><b>{member.name}</b><small>{member.email}</small></span><ChevronRight size={18}/></button>)}</div></section></div>}
       {(newChannel || editingChannel) && (
         <div className="modal-backdrop">
           <section className="workspace-modal">

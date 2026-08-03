@@ -3,9 +3,13 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
+import {CalendarDays,CircleUserRound,Clock3,FileText,Kanban,LayoutDashboard,ListChecks,MessageCircle,PanelsTopLeft,Settings,UsersRound,Rows3,type LucideIcon} from "lucide-react";
 import { navItems } from "./workspace-data";
 import { useWorkspace } from "./workspace-store";
 import { PresenceSummary, useRealtime } from "./realtime-provider";
+
+const navIcons:Record<string,LucideIcon>={chat:MessageCircle,dashboard:LayoutDashboard,workspace:PanelsTopLeft,kanban:Kanban,backlog:ListChecks,sprintBacklog:Rows3,sprint:Clock3,team:UsersRound,calendar:CalendarDays,docs:FileText,settings:Settings,profile:CircleUserRound};
 
 export function WorkspaceShell({ user, children }: { user: { id: string; name: string; email: string }; children: ReactNode }) {
   const pathname = usePathname(); const router = useRouter(); const [open, setOpen] = useState(false); const [query, setQuery] = useState(""); const [searchOpen, setSearchOpen] = useState(false); const [toast,setToast]=useState<{title:string;body:string;mentioned:boolean}|null>(null); const [unread,setUnread]=useState(0); const searchRef = useRef<HTMLInputElement>(null); const unreadRef=useRef<number|null>(null); const latestRef=useRef<string|null>(null); const realtime=useRealtime();
@@ -28,8 +32,8 @@ export function WorkspaceShell({ user, children }: { user: { id: string; name: s
   const logout = async () => { await fetch("/api/admin/logout", { method: "POST" }); router.replace("/admin/login"); router.refresh(); };
   return <div className="workspace-root">
     <aside className={`workspace-sidebar ${open ? "is-open" : ""}`}>
-      <Link className="workspace-brand" href="/"><img src="/meridian-globe-transparent.png" alt="" /><span>Meridian <small>Workspace</small></span></Link>
-      <nav aria-label="Navegación del Workspace">{navItems.map(([label, href, icon]) => <Link key={href} className={pathname === href ? "active" : ""} href={href} onClick={() => {setOpen(false);if(href==="/admin/chat"){setUnread(0);unreadRef.current=0}}}><i className="material-symbols-rounded" aria-hidden="true">{icon}</i>{label}{href==="/admin/chat"&&unread>0&&<em className="nav-unread">{unread>99?"99+":unread}</em>}</Link>)}</nav>
+      <Link className="workspace-brand" href="/"><Image src="/meridian-globe-transparent.png" width={42} height={42} alt="" /><span>Meridian <small>Workspace</small></span></Link>
+      <nav aria-label="Navegación del Workspace">{navItems.map(([label, href, icon]) => {const Icon=navIcons[icon];return <Link key={href} className={pathname === href ? "active" : ""} href={href} onClick={() => {setOpen(false);if(href==="/admin/chat"){setUnread(0);unreadRef.current=0}}}><Icon aria-hidden="true" size={19} strokeWidth={1.8}/>{label}{href==="/admin/chat"&&unread>0&&<em className="nav-unread">{unread>99?"99+":unread}</em>}</Link>})}</nav>
       <div className="workspace-profile"><span className="avatar">{user.name.slice(0, 2).toUpperCase()}</span><span><b>{user.name}</b><small>{user.email}</small></span></div>
       <button className="workspace-logout" onClick={logout}>Cerrar sesión</button>
     </aside>
