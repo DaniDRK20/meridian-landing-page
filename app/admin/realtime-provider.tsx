@@ -2,7 +2,7 @@
 import * as Ably from "ably";
 import {createContext,useContext,useEffect,useState,type ReactNode} from "react";
 
-export type PresenceState={id:string;name:string;email:string;state:"active"|"away"};
+export type PresenceState={id:string;name:string;email:string;state:"active"|"away";typing_channel?:string|null};
 const RealtimeContext=createContext<Ably.Realtime|null>(null);
 const PresenceContext=createContext<PresenceState[]>([]);
 
@@ -13,7 +13,7 @@ export function RealtimeProvider({enabled,user,children}:{enabled:boolean;user:{
   const loadPresence=async()=>{try{const response=await fetch("/api/admin/presence",{cache:"no-store"}),result=await response.json();if(!stopped&&result.ok)setMembers(result.members.filter((member:{state:string})=>member.state!=="offline"))}catch{}};
   const heartbeat=async()=>{try{await fetch("/api/admin/presence",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({state:document.hidden?"away":"active"})});await loadPresence()}catch{}};
   void heartbeat();
-  const heartbeatTimer=window.setInterval(heartbeat,15000),presenceTimer=window.setInterval(loadPresence,5000);
+  const heartbeatTimer=window.setInterval(heartbeat,15000),presenceTimer=window.setInterval(loadPresence,1200);
   const visibility=()=>void heartbeat();document.addEventListener("visibilitychange",visibility);
   if(!enabled)return()=>{stopped=true;clearInterval(heartbeatTimer);clearInterval(presenceTimer);document.removeEventListener("visibilitychange",visibility)};
   const realtime=new Ably.Realtime({authUrl:"/api/admin/chat/token",authMethod:"GET"});

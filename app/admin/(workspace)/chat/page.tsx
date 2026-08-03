@@ -1,6 +1,6 @@
 "use client";
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
-import { useRealtime } from "../../realtime-provider";
+import { useRealtime, useWorkspacePresence } from "../../realtime-provider";
 type Channel = {
   id: string;
   name: string;
@@ -40,8 +40,10 @@ export default function ChatPage() {
   const bottom = useRef<HTMLDivElement>(null),
     textarea = useRef<HTMLTextAreaElement>(null),
     typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null),
+    lastTypingSent = useRef(0),
     remoteTypingTimers = useRef(new Map<string,ReturnType<typeof setTimeout>>()),
     realtime = useRealtime();
+  const presence=useWorkspacePresence(),visibleTypingUsers=[...new Set([...typingUsers,...presence.filter(member=>member.id!==data?.currentUser?.id&&member.typing_channel===channel).map(member=>member.name)])];
   const load = useCallback(
     async (id?: string, quiet = false) => {
       try {
@@ -91,7 +93,8 @@ export default function ChatPage() {
   }, [realtime, channel, load]);
   useEffect(()=>{if(!realtime||!data?.currentUser)return;const live=realtime.channels.get("meridian:workspace"),listener=(message:{data?:{channelId?:string;userId?:string;userName?:string;typing?:boolean}})=>{const info=message.data;if(!info?.userId||info.userId===data.currentUser.id||info.channelId!==channel)return;const previous=remoteTypingTimers.current.get(info.userId);if(previous)clearTimeout(previous);setTypingUsers(users=>info.typing?[...new Set([...users,info.userName||"Alguien"])]:users.filter(name=>name!==info.userName));if(info.typing){const timer=setTimeout(()=>setTypingUsers(users=>users.filter(name=>name!==info.userName)),2200);remoteTypingTimers.current.set(info.userId,timer)}};live.subscribe("chat.typing",listener);const timers=remoteTypingTimers.current;return()=>{live.unsubscribe("chat.typing",listener);timers.forEach(clearTimeout);timers.clear();setTypingUsers([])}},[realtime,channel,data?.currentUser]);
   const publishTyping=(typing:boolean)=>{if(!realtime||!data?.currentUser||!channel)return;void realtime.channels.get("meridian:workspace").publish("chat.typing",{channelId:channel,userId:data.currentUser.id,userName:data.currentUser.name,typing}).catch(()=>undefined)};
-  const updateText=(value:string)=>{setText(value);publishTyping(Boolean(value.trim()));if(typingTimer.current)clearTimeout(typingTimer.current);typingTimer.current=setTimeout(()=>publishTyping(false),1400)};
+  const publishTypingFallback=(typing:boolean)=>{const now=Date.now();if(typing&&now-lastTypingSent.current<800)return;lastTypingSent.current=now;void fetch("/api/admin/presence",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({typingChannel:typing?channel:null})}).catch(()=>undefined)};
+  const updateText=(value:string)=>{setText(value);const typing=Boolean(value.trim());publishTyping(typing);publishTypingFallback(typing);if(typingTimer.current)clearTimeout(typingTimer.current);typingTimer.current=setTimeout(()=>{publishTyping(false);publishTypingFallback(false)},1400)};
   const mentionIds =
       data?.users
         .filter((user) =>
@@ -126,6 +129,7 @@ export default function ChatPage() {
     }
     setText("");
     publishTyping(false);
+    publishTypingFallback(false);
     setReply(null);
     setEditing(null);
     await load(channel);
@@ -306,7 +310,7 @@ export default function ChatPage() {
                 </article>
               );
             })}
-            {typingUsers.length>0&&<div className="chat-typing-row"><span className="avatar">{typingUsers[0].slice(0,2).toUpperCase()}</span><div><small>{typingUsers.join(", ")} {typingUsers.length===1?"está":"están"} escribiendo…</small><span className="chat-typing-bubble"><i/><i/><i/></span></div></div>}
+            {visibleTypingUsers.length>0&&<div className="chat-typing-row"><span className="avatar">{visibleTypingUsers[0].slice(0,2).toUpperCase()}</span><div><small>{visibleTypingUsers.join(", ")} {visibleTypingUsers.length===1?"está":"están"} escribiendo…</small><span className="chat-typing-bubble"><i/><i/><i/></span></div></div>}
             <div ref={bottom} />
           </div>
           <form className="chat-composer" onSubmit={send}>
