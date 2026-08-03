@@ -3,6 +3,7 @@ import { getAdminSession } from "@/lib/admin-session";
 import { WorkspaceShell } from "../workspace-shell";
 import "../workspace.css";
 import "../chat-enhancements.css";
+import "../workspace-features.css";
 import { WorkspaceProvider } from "../workspace-store";
 import { RealtimeProvider } from "../realtime-provider";
 import type {Metadata} from "next";
