@@ -1,1 +1,44 @@
-.workspace-monochrome{filter:none;--paper:#03132f;--navy:#f5f8ff;--muted:#aebbd0;--line:#284368;--blue:#6d96ff;--success:#55d89a;--warning:#ffc75a;--danger:#ff8b84;color-scheme:dark;background:#03132f}.workspace-monochrome .workspace-sidebar,.workspace-monochrome .stat-card,.workspace-monochrome .workspace-panel,.workspace-monochrome .team-card,.workspace-monochrome .doc-card,.workspace-monochrome .settings-list article,.workspace-monochrome .workspace-modal,.workspace-monochrome .calendar,.workspace-monochrome .table-wrap,.workspace-monochrome .chat-shell,.workspace-monochrome .chat-room,.workspace-monochrome .chat-composer{background:#092044}.workspace-monochrome .workspace-topbar{background:rgba(3,19,47,.9)}.workspace-monochrome input,.workspace-monochrome textarea,.workspace-monochrome select,.workspace-monochrome .secondary-button,.workspace-monochrome .theme-toggle,.workspace-monochrome .calendar-toolbar,.workspace-monochrome .calendar-toolbar button,.workspace-monochrome .chat-message>div,.workspace-monochrome .chat-channels>button.active{background:#102b54;color:#f5f8ff}.workspace-monochrome .chat-channels,.workspace-monochrome .calendar-grid .outside,.workspace-monochrome .document-export{background:#061a39}.workspace-monochrome .workspace-sidebar nav a:hover,.workspace-monochrome .workspace-sidebar nav a.active,.workspace-monochrome .sprint-pill{background:#173662;color:#fff}.workspace-monochrome .global-search-results,.workspace-monochrome .mention-menu{background:#092044}.workspace-monochrome .global-search-results button,.workspace-monochrome .mention-menu button{background:transparent;color:#f5f8ff}.workspace-monochrome .calendar-grid article.is-today{background:#12315e}.workspace-monochrome .calendar-event{background:#183b70;color:#eef4ff}.workspace-monochrome .settings-toggle i{background:#486181}.workspace-monochrome .workspace-sidebar nav a,.workspace-monochrome .workspace-logout{color:#c5d2e6}.workspace-monochrome .workspace-brand img{filter:drop-shadow(0 0 8px rgba(90,137,255,.4))}
+html:has(.workspace-monochrome),body:has(.workspace-monochrome){min-height:100%;background:#08090c;color-scheme:dark}
+.workspace-monochrome{filter:none;min-height:100dvh;--paper:#08090c;--navy:#f3f5f8;--muted:#a2a9b5;--line:#2a2f38;--blue:#7892ff;--success:#4bd195;--warning:#f5bd58;--danger:#ff827a;color-scheme:dark;background:#08090c}
+.workspace-monochrome .workspace-sidebar{background:#0c0e12;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#343a45 transparent}
+.workspace-monochrome .workspace-main,.workspace-monochrome .workspace-content{background:#08090c}
+.workspace-monochrome .workspace-topbar{background:rgba(8,9,12,.9);box-shadow:0 1px 0 rgba(255,255,255,.025)}
+.workspace-monochrome .stat-card,.workspace-monochrome .workspace-panel,.workspace-monochrome .team-card,.workspace-monochrome .doc-card,.workspace-monochrome .settings-list article,.workspace-monochrome .workspace-modal,.workspace-monochrome .calendar,.workspace-monochrome .table-wrap,.workspace-monochrome .chat-shell,.workspace-monochrome .chat-room,.workspace-monochrome .chat-composer,.workspace-monochrome .task-drawer,.workspace-monochrome .workspace-state{background:#111318}
+.workspace-monochrome .chat-channels,.workspace-monochrome .calendar-grid .outside,.workspace-monochrome .document-export,.workspace-monochrome .kanban-column{background:#0d0f13}
+.workspace-monochrome input,.workspace-monochrome textarea,.workspace-monochrome select,.workspace-monochrome .secondary-button,.workspace-monochrome .theme-toggle,.workspace-monochrome .calendar-toolbar,.workspace-monochrome .calendar-toolbar button,.workspace-monochrome .chat-message>div,.workspace-monochrome .chat-channels>button.active,.workspace-monochrome .drawer-close,.workspace-monochrome .workspace-modal>header button,.workspace-monochrome .toolbar button,.workspace-monochrome .password-field button{background:#181b21;color:#f3f5f8;border-color:#303641}
+.workspace-monochrome input::placeholder,.workspace-monochrome textarea::placeholder{color:#767e8b}
+.workspace-monochrome input:focus,.workspace-monochrome textarea:focus,.workspace-monochrome select:focus{border-color:#657fe8;box-shadow:0 0 0 4px rgba(101,127,232,.13)}
+.workspace-monochrome .workspace-sidebar nav a,.workspace-monochrome .workspace-logout{color:#b3bac5}
+.workspace-monochrome .workspace-sidebar nav a:hover,.workspace-monochrome .workspace-sidebar nav a.active,.workspace-monochrome .sprint-pill{background:#1b1f27;color:#fff}
+.workspace-monochrome .workspace-profile{background:#0c0e12}
+.workspace-monochrome .avatar,.workspace-monochrome .top-avatar,.workspace-monochrome .presence-summary>span>i{background:#242933;color:#f7f8fa;border-color:#0c0e12}
+.workspace-monochrome .workspace-brand img{filter:drop-shadow(0 0 7px rgba(120,146,255,.28))}
+.workspace-monochrome .global-search-results,.workspace-monochrome .mention-menu,.workspace-monochrome .workspace-toast,.workspace-monochrome .presence-summary{background:rgba(17,19,24,.97);border-color:#303641;color:#f3f5f8}
+.workspace-monochrome .global-search-results button,.workspace-monochrome .mention-menu button{background:transparent;color:#f3f5f8}
+.workspace-monochrome .global-search-results button:hover,.workspace-monochrome .mention-menu button:hover{background:#1b1f27}
+.workspace-monochrome kbd{background:#20242c;color:#cbd1db;border-color:#343a45}
+.workspace-monochrome .top-logout,.workspace-monochrome .chat-header-actions>button{background:#181b21;color:#f3f5f8;border-color:#343a45}
+.workspace-monochrome .top-logout:hover,.workspace-monochrome .chat-header-actions>button:hover{background:#22262e;color:#fff;border-color:#48505d}
+.workspace-monochrome .admin-primary{background:#f0f2f6;color:#0b0c0f}
+.workspace-monochrome .admin-primary:hover{background:#fff}
+.workspace-monochrome .admin-primary:disabled{background:#2a2f38;color:#747c89;opacity:1}
+.workspace-monochrome .chat-message p,.workspace-monochrome .chat-message b,.workspace-monochrome .chat-message strong{color:#eef1f5}
+.workspace-monochrome .chat-message time,.workspace-monochrome .chat-message small,.workspace-monochrome .chat-message footer{color:#969eaa}
+.workspace-monochrome .chat-message>div{box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.workspace-monochrome .chat-message:hover>div,.workspace-monochrome .chat-message:focus-within>div{border-color:#464e5a;box-shadow:0 9px 24px rgba(0,0,0,.25)}
+.workspace-monochrome .chat-message blockquote,.workspace-monochrome .chat-context{background:#20242b;color:#dce1e8}
+.workspace-monochrome .chat-composer textarea{background:#15181e;color:#f3f5f8}
+.workspace-monochrome .chat-typing-bubble,.workspace-monochrome .chat-typing-bubble:after{background:#181b21;border-color:#303641}
+.workspace-monochrome .calendar-grid article.is-today{background:#191d24}
+.workspace-monochrome .calendar-event{background:#252b35;color:#eef1f5}
+.workspace-monochrome .workspace-table th{background:#14171c}
+.workspace-monochrome .workspace-table tbody tr:hover{background:#191c22}
+.workspace-monochrome .kanban-card,.workspace-monochrome .kanban-column>header span{background:#171a20;color:#f3f5f8}
+.workspace-monochrome .progress{background:#2a3039}
+.workspace-monochrome .settings-toggle i{background:#464e5b}
+.workspace-monochrome .team-head .available{background:#132a21}
+.workspace-monochrome .team-head .focus{background:#2e2718}
+.workspace-monochrome .danger-button{background:#2a1718;border-color:#633235;color:#ff9993}
+.workspace-monochrome .nav-unread{border-color:#0c0e12}
+.workspace-monochrome .workspace-toast>i{background:#f0f2f6;color:#0b0c0f}
+@media(max-width:820px){.workspace-monochrome .workspace-sidebar{background:#0c0e12}.workspace-monochrome .sidebar-scrim{background:rgba(0,0,0,.7)}}
