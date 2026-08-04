@@ -1,0 +1,50 @@
+.document-editor-form .doc-editor {
+  min-height: 220px;
+  max-height: 42dvh;
+}
+
+.document-editor-form .document-actions {
+  position: sticky;
+  bottom: -1px;
+  z-index: 2;
+  margin: 0 -2px -2px;
+  padding: 14px 2px 2px;
+  background: white;
+}
+
+.document-actions .danger-button {
+  gap: 7px;
+}
+
+.workspace-monochrome .document-export a {
+  border-color: #303641;
+  background: #181b21;
+  color: #f3f5f8;
+}
+
+.workspace-monochrome .document-editor-form .document-actions {
+  background: #111318;
+}
+
+@media (max-width: 600px) {
+  .document-editor-form .doc-editor {
+    min-height: 180px;
+    max-height: 38dvh;
+  }
+
+  .document-editor-form .document-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .document-actions .danger-button {
+    grid-column: 1 / -1;
+    width: 100%;
+    margin: 0;
+  }
+
+  .document-actions .admin-primary,
+  .document-actions .secondary-button {
+    width: 100%;
+  }
+}
