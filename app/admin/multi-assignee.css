@@ -1,8 +1,14 @@
 .assignee-picker {
+  align-self: start;
   min-width: 0;
   margin: 0;
   padding: 0;
   border: 0;
+}
+
+.workspace-form > label,
+.workspace-form > fieldset {
+  align-self: start;
 }
 
 .assignee-picker > legend {
