@@ -15,7 +15,6 @@
     "create-admin": "node scripts/create-admin.mjs"
   },
   "dependencies": {
-    "@napi-rs/canvas": "^0.1.80",
     "@neondatabase/serverless": "^1.1.0",
     "ably": "^2.26.0",
     "bcryptjs": "^3.0.3",
@@ -25,7 +24,7 @@
     "mammoth": "^1.10.0",
     "next": "16.2.6",
     "pdf-lib": "^1.17.1",
-    "pdf-parse": "^2.4.5",
+    "pdf2json": "^4.0.3",
     "react": "19.2.6",
     "react-dom": "19.2.6"
   },
