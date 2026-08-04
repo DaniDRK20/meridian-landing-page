@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/lib/admin-db";
 import { getAdminSession } from "@/lib/admin-session";
+import { accessTokenFor, ensureGoogleCalendarSchema, googleConfigured } from "@/lib/google-calendar";
 
 const bad = (message: string, status = 400) => NextResponse.json({ ok: false, error: message }, { status });
 const text = (value: unknown, max = 5000) => String(value ?? "").trim().slice(0, max);
@@ -70,7 +71,22 @@ export async function DELETE(request: NextRequest) {
   const data=await request.json(); const id=text(data.id,50); const sql=adminDb();
   if(data.resource==="task") await sql`delete from workspace_tasks where id=${id}`;
   else if(data.resource==="member") await sql`delete from workspace_members where id=${id}`;
-  else if(data.resource==="event") await sql`delete from workspace_events where id=${id}`;
+  else if(data.resource==="event") {
+    if(googleConfigured()){
+      await ensureGoogleCalendarSchema();
+      const links=await sql`select l.user_id,l.google_event_id from workspace_google_event_links l inner join workspace_google_calendar_connections c on c.user_id=l.user_id where l.workspace_event_id=${id}`;
+      for(const link of links){
+        try{
+          const token=await accessTokenFor(String(link.user_id));
+          const response=await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${encodeURIComponent(String(link.google_event_id))}?sendUpdates=none`,{method:"DELETE",headers:{Authorization:`Bearer ${token}`}});
+          if(!response.ok&&response.status!==404&&response.status!==410)throw new Error("Google Calendar rechazó la eliminación");
+        }catch(reason){
+          return bad(reason instanceof Error?`No se eliminó el evento: ${reason.message}`:"No se pudo eliminar el evento de Google Calendar.",502);
+        }
+      }
+    }
+    await sql`delete from workspace_events where id=${id}`;
+  }
   else if(data.resource==="document") await sql`delete from workspace_documents where id=${id}`;
   else if(data.resource==="sprint") await sql`delete from workspace_sprints where id=${id}`;
   else return bad("Recurso inválido.");
