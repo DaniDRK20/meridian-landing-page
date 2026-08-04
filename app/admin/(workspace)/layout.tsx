@@ -5,6 +5,7 @@ import "../workspace.css";
 import "../chat-enhancements.css";
 import "../workspace-features.css";
 import "../document-editor.css";
+import "../multi-assignee.css";
 import "../workspace-dark.css";
 import "../google-calendar.css";
 import { WorkspaceProvider } from "../workspace-store";

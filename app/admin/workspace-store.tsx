@@ -3,7 +3,7 @@ import { createContext,useCallback,useContext,useEffect,useState,type ReactNode 
 
 export type Member={id:string;name:string;role:string;email:string|null;availability:string;workload:number;task_count:number;completed_count:number};
 export type Sprint={id:string;name:string;goal:string;starts_on:string;ends_on:string;status:string;task_count:number;completed_count:number;points:number};
-export type Task={id:string;code:string;title:string;description:string;status:string;priority:string;tag:string;story_points:number;progress:number;due_on:string|null;assignee_id:string|null;assignee_name:string|null;sprint_id:string|null;sprint_name:string|null};
+export type Task={id:string;code:string;title:string;description:string;status:string;priority:string;tag:string;story_points:number;progress:number;due_on:string|null;assignee_id:string|null;assignee_name:string|null;assignee_ids:string[];assignee_names:string[];sprint_id:string|null;sprint_name:string|null};
 export type WorkspaceEvent={id:string;title:string;event_date:string;event_time:string|null;kind:string};
 export type WorkspaceDocument={id:string;title:string;category:string;content:string;updated_at:string};
 type Data={tasks:Task[];members:Member[];sprints:Sprint[];events:WorkspaceEvent[];documents:WorkspaceDocument[]};

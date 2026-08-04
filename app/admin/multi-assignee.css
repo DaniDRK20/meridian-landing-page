@@ -1,0 +1,69 @@
+.assignee-picker {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.assignee-picker > legend {
+  margin-bottom: 7px;
+  color: #425474;
+  font-size: 12px;
+}
+
+.assignee-picker > div {
+  display: grid;
+  max-height: 164px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+}
+
+.assignee-picker > div > label {
+  display: flex;
+  grid-template-columns: none;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.assignee-picker > div > label:first-child {
+  border-top: 0;
+}
+
+.assignee-picker input {
+  width: 18px;
+  min-height: 18px;
+  accent-color: var(--blue);
+}
+
+.assignee-picker label > span {
+  display: grid;
+  gap: 2px;
+  color: var(--navy);
+  font-size: 12px;
+}
+
+.assignee-picker label small,
+.assignee-picker > small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.assignee-picker > small {
+  display: block;
+  margin-top: 6px;
+}
+
+.workspace-monochrome .assignee-picker > div {
+  border-color: #303641;
+  background: #181b21;
+}
+
+.workspace-monochrome .assignee-picker label > span {
+  color: #f3f5f8;
+}
