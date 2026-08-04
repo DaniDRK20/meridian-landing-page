@@ -8,13 +8,14 @@ import {CalendarDays,CircleUserRound,Clock3,Contrast,FileText,Kanban,LayoutDashb
 import { navItems } from "./workspace-data";
 import { useWorkspace } from "./workspace-store";
 import { PresenceSummary, useRealtime } from "./realtime-provider";
+import { defaultPreferences, playNotificationSound } from "./notification-sound";
 
 const navIcons:Record<string,LucideIcon>={chat:MessageCircle,dashboard:LayoutDashboard,workspace:PanelsTopLeft,kanban:Kanban,backlog:ListChecks,sprintBacklog:Rows3,sprint:Clock3,team:UsersRound,calendar:CalendarDays,docs:FileText,settings:Settings,profile:CircleUserRound};
 
 export function WorkspaceShell({ user, children }: { user: { id: string; name: string; email: string }; children: ReactNode }) {
-  const pathname = usePathname(); const router = useRouter(); const [open, setOpen] = useState(false); const [query, setQuery] = useState(""); const [searchOpen, setSearchOpen] = useState(false); const [toast,setToast]=useState<{title:string;body:string;mentioned:boolean}|null>(null); const [unread,setUnread]=useState(0); const [preferences,setPreferences]=useState({monochrome:false,sounds:true,reducedMotion:false,compact:false}); const searchRef = useRef<HTMLInputElement>(null); const unreadRef=useRef<number|null>(null); const latestRef=useRef<string|null>(null); const realtime=useRealtime();
+  const pathname = usePathname(); const router = useRouter(); const [open, setOpen] = useState(false); const [query, setQuery] = useState(""); const [searchOpen, setSearchOpen] = useState(false); const [toast,setToast]=useState<{title:string;body:string;mentioned:boolean}|null>(null); const [unread,setUnread]=useState(0); const [preferences,setPreferences]=useState(defaultPreferences); const searchRef = useRef<HTMLInputElement>(null); const unreadRef=useRef<number|null>(null); const latestRef=useRef<string|null>(null); const realtime=useRealtime();
   const { tasks, members, sprints, events, documents } = useWorkspace();
-  const playMessageSound=()=>{if(!preferences.sounds)return;try{const AudioContextClass=window.AudioContext||(window as typeof window&{webkitAudioContext:typeof AudioContext}).webkitAudioContext,context=new AudioContextClass(),oscillator=context.createOscillator(),gain=context.createGain();oscillator.type="sine";oscillator.frequency.setValueAtTime(660,context.currentTime);oscillator.frequency.exponentialRampToValueAtTime(880,context.currentTime+.12);gain.gain.setValueAtTime(.0001,context.currentTime);gain.gain.exponentialRampToValueAtTime(.12,context.currentTime+.015);gain.gain.exponentialRampToValueAtTime(.0001,context.currentTime+.22);oscillator.connect(gain);gain.connect(context.destination);oscillator.start();oscillator.stop(context.currentTime+.23);oscillator.onended=()=>void context.close()}catch{}};
+  const playMessageSound=()=>{if(preferences.sounds)playNotificationSound(preferences.soundData)};
   const results = (() => {
     const value = query.trim().toLowerCase(); if (value.length < 2) return [];
     const includes = (...parts: (string | null | undefined)[]) => parts.join(" ").toLowerCase().includes(value);
