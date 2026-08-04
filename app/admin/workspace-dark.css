@@ -18,6 +18,8 @@ html:has(.workspace-monochrome),body:has(.workspace-monochrome){min-height:100%;
 .workspace-monochrome .global-search-results button:hover,.workspace-monochrome .mention-menu button:hover{background:#1b1f27}
 .workspace-monochrome kbd{background:#20242c;color:#cbd1db;border-color:#343a45}
 .workspace-monochrome .top-logout,.workspace-monochrome .chat-header-actions>button{background:#181b21;color:#f3f5f8;border-color:#343a45}
+.workspace-monochrome .sidebar-toggle{background:#181b21;color:#f3f5f8;border-color:#343a45;box-shadow:0 8px 24px rgba(0,0,0,.22)}
+.workspace-monochrome .sidebar-toggle:hover,.workspace-monochrome .sidebar-toggle:focus-visible{background:#22262e;color:#fff;border-color:#4b5360;outline:none}
 .workspace-monochrome .top-logout:hover,.workspace-monochrome .chat-header-actions>button:hover{background:#22262e;color:#fff;border-color:#48505d}
 .workspace-monochrome .admin-primary{background:#f0f2f6;color:#0b0c0f}
 .workspace-monochrome .admin-primary:hover{background:#fff}
