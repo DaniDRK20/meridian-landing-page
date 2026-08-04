@@ -1,5 +1,6 @@
 .assignee-picker {
   align-self: start;
+  grid-column: 1 / -1;
   min-width: 0;
   margin: 0;
   padding: 0;
@@ -19,6 +20,7 @@
 
 .assignee-picker > div {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   max-height: 164px;
   overflow: auto;
   border: 1px solid var(--line);
@@ -34,10 +36,19 @@
   min-height: 48px;
   padding: 8px 12px;
   border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
   cursor: pointer;
 }
 
 .assignee-picker > div > label:first-child {
+  border-top: 0;
+}
+
+.assignee-picker > div > label:nth-child(odd) {
+  border-left: 0;
+}
+
+.assignee-picker > div > label:nth-child(2) {
   border-top: 0;
 }
 
@@ -72,4 +83,20 @@
 
 .workspace-monochrome .assignee-picker label > span {
   color: #f3f5f8;
+}
+
+@media (max-width: 600px) {
+  .assignee-picker > div {
+    grid-template-columns: 1fr;
+  }
+
+  .assignee-picker > div > label,
+  .assignee-picker > div > label:nth-child(2) {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .assignee-picker > div > label:first-child {
+    border-top: 0;
+  }
 }
