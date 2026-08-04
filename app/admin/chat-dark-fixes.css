@@ -1,0 +1,20 @@
+.workspace-monochrome .direct-picker > div > button {
+  border-color: #303641;
+  background: #181b21;
+  color: #f3f5f8;
+}
+
+.workspace-monochrome .direct-picker > div > button:hover {
+  border-color: #4b5565;
+  background: #20242b;
+  box-shadow: 0 9px 24px rgba(0, 0, 0, 0.25);
+}
+
+.workspace-monochrome .direct-picker > div > button .avatar {
+  background: #283142;
+  color: #fff;
+}
+
+.workspace-monochrome .direct-picker > div > button > svg {
+  color: #8794a8;
+}
